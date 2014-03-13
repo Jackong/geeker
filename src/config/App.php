@@ -15,6 +15,8 @@ class App extends Config {
     protected static function prod()
     {
         return array(
+            'salt' => '3%d@!=-.v4',
+            'debug' => false,
             'log' => array(
                 'file' => PROJECT . "/log/" . DATE . ".log",
                 'level' => Log::INFO
@@ -25,6 +27,7 @@ class App extends Config {
     protected static function dev()
     {
         return array(
+            'debug' => true,
             'log' => array(
                 'level' => Log::TRACE
             )
