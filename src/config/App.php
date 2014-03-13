@@ -17,7 +17,7 @@ class App extends Config {
         return array(
             'prod' => true,
             'log' => array(
-                'file' => PROJECT . "/log/" . DATE . ".log",
+                'resource' => PROJECT . "/log/" . DATE . ".log",
                 'level' => Log::INFO
             )
         );

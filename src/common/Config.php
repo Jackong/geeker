@@ -11,7 +11,7 @@ namespace src\common;
 use src\config\App;
 
 class Config {
-    private static $config;
+    protected static $config;
 
     public static function get($keys = "") {
         $config = static::config();
@@ -29,7 +29,7 @@ class Config {
         return $config;
     }
 
-    private static function config() {
+    protected static function config() {
         if (isset(static::$config)) {
             return static::$config;
         }

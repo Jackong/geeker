@@ -21,11 +21,15 @@ class Log {
 
     private static $instance;
 
-    public static function instance($file, $level) {
+    /**
+     * @return Log
+     */
+    public static function instance() {
         if (isset(static::$instance)) {
             return static::$instance;
         }
-        static::$instance = new Log($file, $level);
+        $log = \src\config\App::get('log');
+        static::$instance = new Log($log['resource'], $log['level']);
         return static::$instance;
     }
 
@@ -55,7 +59,7 @@ class Log {
 
     private function __construct($file, $level)
     {
-        $this->handler = fopen($file, "w");
+        $this->handler = fopen($file, "a");
         $this->level = $level;
     }
 
@@ -63,7 +67,7 @@ class Log {
         if ($level < $this->level) {
             return;
         }
-        fwrite($this->handler, "$level-$msg");
+        fwrite($this->handler, sprintf("%s-%s:%s\n", $level, TIME, $msg));
     }
 
     public function __destruct()
