@@ -4,7 +4,7 @@ date_default_timezone_set("PRC");
 define("PROJECT", dirname(__DIR__));
 define("TIME", $_SERVER['REQUEST_TIME']);
 define("DATE", date("Ymd", TIME));
-define("NOW", date("Y-m-d H:i:s", TIME));
+define("NOW", date("H:i:s", TIME));
 
 
 require_once PROJECT . '/vendor/autoload.php';

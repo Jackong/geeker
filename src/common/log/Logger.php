@@ -38,7 +38,7 @@ class Logger {
         if ($level < $this->level) {
             return;
         }
-        fwrite($this->handler, sprintf("%s-%s:%s\n", $level, TIME, $msg));
+        fwrite($this->handler, sprintf("%s|%s|%s\n", $level, NOW, $msg));
     }
 
     public function __destruct()
