@@ -12,14 +12,24 @@ use src\common\Config;
 use src\common\Log;
 
 class App extends Config {
-    public static function prod()
+    protected static function prod()
     {
         return array(
-            'prod' => true,
             'log' => array(
-                'resource' => PROJECT . "/log/" . DATE . ".log",
+                'file' => PROJECT . "/log/" . DATE . ".log",
                 'level' => Log::INFO
+            ),
+        );
+    }
+
+    protected static function dev()
+    {
+        return array(
+            'log' => array(
+                'level' => Log::TRACE
             )
         );
     }
+
+
 }

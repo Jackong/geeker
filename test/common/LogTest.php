@@ -14,7 +14,8 @@ class LogTest extends \PHPUnit_Framework_TestCase {
 
     public function testLog()
     {
-        Log::instance()->info('xxx');
+        Log::info('good');
+        Log::trace("trace");
     }
 }
  

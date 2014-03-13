@@ -36,16 +36,16 @@ class Config {
         static::$config = static::prod();
         if (!App::get('prod')) {
             $dev = static::dev();
-            static::$config = array_merge(static::$config, $dev);
+            static::$config = array_replace_recursive(static::$config, $dev);
         }
         return static::$config;
     }
 
-    public static function prod() {
+    protected static function prod() {
         return array();
     }
 
-    public static function dev() {
+    protected static function dev() {
         return array();
     }
 } 

@@ -7,8 +7,10 @@
 
 namespace src\common;
 
-class Log {
+use src\common\log\Logger;
+use src\config\App;
 
+class Log {
     const TRACE = 0;
     const DEBUG = 1;
     const INFO = 2;
@@ -16,63 +18,33 @@ class Log {
     const ERROR = 4;
     const FATAL = 5;
 
-    private $handler;
-    private $level = 0;
-
-    private static $instance;
-
-    /**
-     * @return Log
-     */
-    public static function instance() {
-        if (isset(static::$instance)) {
-            return static::$instance;
-        }
-        $log = \src\config\App::get('log');
-        static::$instance = new Log($log['resource'], $log['level']);
-        return static::$instance;
+    public static function trace($msg) {
+        static::logger()->output(static::TRACE, $msg);
     }
 
-    public function trace($msg) {
-        $this->output(static::TRACE, $msg);
+    public static function debug($msg) {
+        static::logger()->output(static::DEBUG, $msg);
     }
 
-    public function debug($msg) {
-        $this->output(static::DEBUG, $msg);
+    public static function info($msg) {
+        static::logger()->output(static::INFO, $msg);
     }
 
-    public function info($msg) {
-        $this->output(static::INFO, $msg);
+    public static function warn($msg) {
+        static::logger()->output(static::WARN, $msg);
     }
 
-    public function warn($msg) {
-        $this->output(static::WARN, $msg);
+    public static function error($msg) {
+        static::logger()->output(static::ERROR, $msg);
     }
 
-    public function error($msg) {
-        $this->output(static::ERROR, $msg);
+    public static function fatal($msg) {
+        static::logger()->output(static::FATAL, $msg);
     }
 
-    public function fatal($msg) {
-        $this->output(static::FATAL, $msg);
-    }
-
-    private function __construct($file, $level)
-    {
-        $this->handler = fopen($file, "a");
-        $this->level = $level;
-    }
-
-    public function output($level, $msg) {
-        if ($level < $this->level) {
-            return;
-        }
-        fwrite($this->handler, sprintf("%s-%s:%s\n", $level, TIME, $msg));
-    }
-
-    public function __destruct()
-    {
-        fclose($this->handler);
+    private static function logger() {
+        $log = App::get('log');
+        return Logger::instance($log['file'], $log['level']);
     }
 }
 
