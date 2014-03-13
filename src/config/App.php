@@ -8,12 +8,14 @@
 namespace src\config;
 
 
+use src\common\Config;
 use src\common\Log;
 
-class App extends Loader {
+class App extends Config {
     public static function prod()
     {
         return array(
+            'prod' => true,
             'log' => array(
                 'file' => PROJECT . "/log/" . DATE . ".log",
                 'level' => Log::INFO
