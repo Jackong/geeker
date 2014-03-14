@@ -25,31 +25,27 @@ $app->error(function(Exception $e) use($app) {
 $request = $app->request();
 $paths = explode('/', $request->getResourceUri());
 //而正确的api请求：/api/group/router
-if (count($paths) < 4) {
+if (count($paths) < 3) {
     \src\common\Log::error(sprintf("Not found|%s|%s|%s", $request->getResourceUri(), $request->getIp(), $request->getUserAgent()));
     $app->status(404);
 } else {
-    $app->group("/$paths[1]", function () use ($app, $request, $paths) {
-        $app->group(
-            "/$paths[2]", function() use ($app, $request, $paths) {
-                $group = strtolower($paths[2]);
-                $routerName = strtolower($paths[3]);
-                $file  = PROJECT . "/src/router/$group/" . ucfirst($routerName);
-                //不存在的router
-                if (!file_exists($file . ".php")) {
-                    \src\common\Log::error(sprintf("Not found|%s|%s|%s", $request->getResourceUri(), $request->getIp(), $request->getUserAgent()));
-                    $app->status(404);
-                } else {
-                    $class = str_replace("/", "\\", $file);
-                    /**
-                     * @var $router src\common\Router
-                     */
-                    $router = new $class();
-                    //由go定义router map
-                    $router->go($routerName, $app);
-                }
-            }
-        );
+    $group = strtolower($paths[1]);
+    $name = strtolower($paths[2]);
+    $app->group("/$group", function() use ($app, $group, $name, $request) {
+        $path  = "/src/router/$group/" . ucfirst($name);
+        //不存在的router
+        if (!file_exists(PROJECT . $path . ".php")) {
+            \src\common\Log::error(sprintf("Not found|%s|%s|%s", $request->getResourceUri(), $request->getIp(), $request->getUserAgent()));
+            $app->status(404);
+        } else {
+            $class = str_replace("/", "\\", $path);
+            /**
+             * 可在construct中优先定义router map
+             * @var $router src\common\Router
+             */
+            $router = new $class();
+            $router->go($app, $name);
+        }
     });
 }
 
