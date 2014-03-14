@@ -3,3 +3,5 @@ composer.lock
 vendor
 .idea
 log/*
+.baeapp
+bae_app_conf.lua
