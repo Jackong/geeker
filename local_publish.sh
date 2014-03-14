@@ -1,2 +1,2 @@
 #!/bin/sh
-bae_build php /root/geeker geeker.duapp.com
+bae_build php /root/geeker.duapp.com geeker.duapp.com

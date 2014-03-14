@@ -5,3 +5,6 @@ vendor
 log/*
 .baeapp
 bae_app_conf.lua
+bae.sh
+Vagrantfile
+.vagrant
