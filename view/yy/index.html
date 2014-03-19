@@ -2,23 +2,61 @@
 <html>
 <head>
     <title></title>
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <script type="text/javascript" src="js/yyapi.js" language="javascript"></script>
 </head>
-<body>
+<body onload="init()">
 
-<div id="txtLog"/>
-<script>
+<script type="text/javascript" language="javascript">
+    debugMode=true;
     document.getElementById("txtLog").innerHTML="调试信息在这里";
     function onButtonClick() {
         //获取当前登录用户的信息
         var u= yy.user.getCurrentUserInfo();
         //显示到网页中
-        document.getElementById("log").innerHTML = "我的昵称:" + u.name;
+        document.getElementById("txtLog").innerHTML = "我的昵称:" + u.name;
+    }
+    function init()
+    {
+        var result = yy.channel.getRootChannelId();
+        document.getElementById("txtChannelIds").innerHTML = "<br>以下是频道id,可以复制填入<br><br>根频道:" + result.cid;
+        printSubChannelId(result.cid);
+    }
+    function onGetListClick() {
+
+        var cid=parseInt(document.getElementById("txtCid").value);
+        var result = yy.channel.getUserList(cid);
+        document.getElementById("txtUserList").innerHTML = "人数=" + result.userList.length + "<br/>" ;
+        for (var i = 0; i < result.userList.length; i++) {
+            var userInfo = yy.user.getUserInfo(result.userList[i]);
+            document.getElementById("txtUserList").innerHTML += "uid=" + result.userList[i] + " YY号=" + userInfo.imId + " 昵称=" + userInfo.name + "<br>";
+        }
+    }
+    //输出所有的子频道id供测试
+    function printSubChannelId(parentId) {
+        var result = yy.channel.getSubChannelIds(parentId);
+        for (var i = 0; i < result.cids.length; i++) {//遍历所有子频道
+            var cinfo=yy.channel.getChannelInfo(result.cids[i]);
+            document.getElementById("txtChannelIds").innerHTML += "<br>" + cinfo.name + ": " + cinfo.longId;
+            printSubChannelId(cinfo.longId);
+        }
     }
 </script>
-<br/>
-<textarea id="txtConsole" cols=78 rows=6></textarea>
+
 <br/>
 <input type="button" style="width:200px" value="GetCurrentUserInfo" onclick="onButtonClick()"/>
+<br/>
+
+子频道的长位id <input type="text" id="txtCid" style="width:150px" value="" /> <input type="button" style="width:200px" value="获取频道用户" onclick="onGetListClick()"/><br>
+<!--显示结果-->
+<br><div id="txtUserList">频道用户列表:</div>
+<br>
+<div id="txtChannelIds"></div>
+
+<div id="txtLog"/>
+<br/>
+<textarea id="txtConsole" cols=78 rows=6></textarea>
+
 </body>
 </html>
