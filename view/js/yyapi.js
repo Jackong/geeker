@@ -874,6 +874,11 @@ IYYChannel.prototype.getUserList = function (cid) {
     }
 };
 
+IYYChannel.prototype.skipChannel = function(tcid, scid) {
+    var result =  callExternal("IChannel_SkipChannel", tcid, scid);
+    return (result.ret === 0);
+};
+
 /**
 * 获取频道风格。用来判断是普通频道风格还是精彩世界风格。
 * @returns 返回频道风格，具体属性如下。<br/>
@@ -3840,6 +3845,9 @@ function callExternal() {
                 break;
             case "IChannelUserList_GetUserList":
                 ret = yyexternal.IChannelUserList_GetUserList(arguments[1]);
+                break;
+            case "IChannel_SkipChannel":
+                ret = yyexternal.IChannel_SkipChannel(arguments[1], arguments[2]);
                 break;
             case "IChannel_GetChannelStyle":
                 ret = yyexternal.IChannel_GetChannelStyle();

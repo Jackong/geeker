@@ -9,6 +9,13 @@
 <body onload="init()">
 
 <script type="text/javascript" language="javascript">
+    yy.addEventListener(IYY.ACTIVE,onActive);
+
+    function onActive(eventData)
+    {
+        document.getElementById("txtLog").innerHTML="点击来源："+eventData.activeCode;
+    }
+
     debugMode=true;
     document.getElementById("txtLog").innerHTML="调试信息在这里";
     function onButtonClick() {
@@ -42,12 +49,25 @@
             printSubChannelId(cinfo.longId);
         }
     }
+
+    function skip() {
+        var tcid = parseInt(document.getElementById('tcid').value);
+        var scid = parseInt(document.getElementById('scid').value);
+        if (yy.channel.skipChannel(tcid, scid)) {
+            document.getElementById('txtLog').innerHTML = "skip ok";
+        } else {
+            document.getElementById('txtLog').innerHTML = "skip failed";
+        }
+    }
 </script>
 
 <br/>
 <input type="button" style="width:200px" value="GetCurrentUserInfo" onclick="onButtonClick()"/>
 <br/>
-
+<input type="text" id="tcid" value=""/>
+<input type="text" id="scid" value=""/>
+<input type="button" value="skip" onclick="skip()"/>
+<br/>
 子频道的长位id <input type="text" id="txtCid" style="width:150px" value="" /> <input type="button" style="width:200px" value="获取频道用户" onclick="onGetListClick()"/><br>
 <!--显示结果-->
 <br><div id="txtUserList">频道用户列表:</div>
