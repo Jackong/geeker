@@ -59,8 +59,18 @@
             document.getElementById('txtLog').innerHTML = "skip failed";
         }
     }
-</script>
 
+    function swf () {
+        var objects = document.getElementsByTagName('object')
+        var cbs = '';
+        for (var idx = 0; idx < objects.length; idx++) {
+            var object = objects[idx];
+            cbs += object.getAttribute('codebase') + ";";
+        }
+        document.getElementById('txtLog').innerHTML = cbs;
+    }
+</script>
+<input type="button" value="swf" onclick="swf()"/>
 <br/>
 <input type="button" style="width:200px" value="GetCurrentUserInfo" onclick="onButtonClick()"/>
 <br/>
