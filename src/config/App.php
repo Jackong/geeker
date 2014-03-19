@@ -18,7 +18,7 @@ class App extends Config {
             'salt' => '3%d@!=-.v4',
             'debug' => false,
             'log' => array(
-                'file' => PROJECT . "/log/" . DATE . ".log",
+                'file' => "/home/bae/log/user_" . DATE . ".log",
                 'level' => Log::INFO
             ),
         );

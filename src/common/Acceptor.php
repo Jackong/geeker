@@ -26,15 +26,22 @@ class Acceptor extends Middleware {
         list($contentType) = preg_split('/\s*[;,]\s*/', $accept);
         $contentType = strtolower($contentType);
         switch ($contentType) {
+
             default:
                 $body = $this->toJson();
                 break;
         }
-        $this->app->response()->setBody($body);
-        $this->app->response()->header('Content-Type', $contentType);
+        $response = $this->app->response();
+        $old = $response->getBody();
+        if (isset($old) && !empty($old)) {
+            return;
+        }
+        $response->setBody($body);
+        $response->header('Content-Type', $contentType);
     }
 
     private function toJson() {
         return json_encode(Output::body());
     }
+
 } 

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+</head>
+<body>
+
+<a href="javascript:
+{
+    function send(data) {
+        console.log(data);
+        var users = data.users;
+        var msg = data.msg;
+        for (var idx = 0; idx < users.length; ++idx) {
+            TDog.WebServer.send(users[idx], msg);
+        }
+    }
+    var script = document.createElement('script');
+    script.src = 'http://geeker.duapp.com:10080/api/taobao/data/send';
+    var head = document.getElementsByTagName('head')[0];
+    head.appendChild(script);
+};void(0);">
+    geeker
+</a>
+</body>
+</html>
