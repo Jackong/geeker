@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <script type="text/javascript" src="js/yyapi.js" language="javascript"></script>
+</head>
+<body>
+
+<div id="txtLog"/>
+<script>
+    document.getElementById("txtLog").innerHTML="调试信息在这里";
+    function onButtonClick() {
+        //获取当前登录用户的信息
+        var u= yy.user.getCurrentUserInfo();
+        //显示到网页中
+        document.getElementById("log").innerHTML = "我的昵称:" + u.name;
+    }
+</script>
+<br/>
+<textarea id="txtConsole" cols=78 rows=6></textarea>
+<br/>
+<input type="button" style="width:200px" value="GetCurrentUserInfo" onclick="onButtonClick()"/>
+</body>
+</html>
