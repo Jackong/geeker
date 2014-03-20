@@ -65,9 +65,18 @@
         var result = yy.im.addFriend(uid);
         document.getElementById('txtLog').innerHTML = result.ret;
     }
+
+    function pullToSubChannel() {
+        var uid = parseInt(document.getElementById('uid').value);
+        var cid = parseInt(document.getElementById('cid').value);
+        var res = yy.userController.pullToSubChannel(uid, cid);
+        document.getElementById('txtLog').innerHTML = res.ret;
+    }
 </script>
-<input type="text" id="uid" value=""/>
+cid: <input type="text" id="cid" value=""/>
+uid: <input type="text" id="uid" value=""/>
 <input type="button" value="addFriend" onclick="addFriend()"/>
+<input type="button" value="pull" onclick="pullToSubChannel()"/>
 <br/>
 <input type="button" style="width:200px" value="GetCurrentUserInfo" onclick="onButtonClick()"/>
 <br/>
