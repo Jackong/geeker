@@ -60,17 +60,14 @@
         }
     }
 
-    function swf () {
-        var objects = document.getElementsByTagName('object')
-        var cbs = '';
-        for (var idx = 0; idx < objects.length; idx++) {
-            var object = objects[idx];
-            cbs += object.getAttribute('codebase') + ";";
-        }
-        document.getElementById('txtLog').innerHTML = cbs;
+    function addFriend () {
+        var uid = parseInt(document.getElementById('uid').value);
+        var result = yy.im.addFriend(uid);
+        document.getElementById('txtLog').innerHTML = result.ret;
     }
 </script>
-<input type="button" value="swf" onclick="swf()"/>
+<input type="text" id="uid" value=""/>
+<input type="button" value="addFriend" onclick="addFriend()"/>
 <br/>
 <input type="button" style="width:200px" value="GetCurrentUserInfo" onclick="onButtonClick()"/>
 <br/>
