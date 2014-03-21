@@ -2,25 +2,270 @@
 <html>
 <head>
     <title></title>
+    <link rel="stylesheet" href="http://cdn.bootcss.com/twitter-bootstrap/3.0.3/css/bootstrap.min.css"/>
+    <script type="text/javascript" src="http://cdn.bootcss.com/jquery/1.10.2/jquery.min.js"></script>
+    <script type="text/javascript" src="http://cdn.bootcss.com/twitter-bootstrap/3.0.3/js/bootstrap.min.js"></script>
 </head>
 <body>
-
+<hr/>
 <a href="javascript:
 {
+    if (!document.getElementById('bootstrap')) {
+        var head = document.getElementsByTagName('head')[0];
+
+        var bootstrap = document.createElement('link');
+        bootstrap.id = 'bootstrap';
+        bootstrap.rel = 'stylesheet';
+        bootstrap.href = 'http://cdn.bootcss.com/twitter-bootstrap/3.0.3/css/bootstrap.min.css';
+        head.appendChild(bootstrap);
+
+        var jquery = document.createElement('script');
+        jquery.type = 'text/javascript';
+        jquery.src = 'http://cdn.bootcss.com/jquery/1.10.2/jquery.min.js';
+        head.appendChild(jquery);
+
+        setTimeout(function() {
+            var bootstrapjs = document.createElement('script');
+            bootstrapjs.type = 'text/javascript';
+            bootstrapjs.src = 'http://cdn.bootcss.com/twitter-bootstrap/3.0.3/js/bootstrap.min.js';
+            head.appendChild(bootstrapjs);
+        }, 2000);
+    }
+
+    function newElement(tag, attrs, inner) {
+        var element = document.createElement(tag);
+        for (var attr in attrs) {
+            element.setAttribute(attr, attrs[attr]);
+        }
+        if (inner) {
+            element.innerHTML = inner;
+        }
+        return element;
+    };
+
+    function mHeader() {
+        var header = newElement('div', {
+            class: 'modal-header'
+        });
+
+        var title = newElement('div', {
+            class: 'modal-title',
+            id: 'geekerLabel'
+        }, '信息确认');
+
+        header.appendChild(title);
+        return header;
+    };
+
+    function mBody() {
+        var body = newElement('div', {
+            class: 'modal-body'
+        });
+
+        var form = newElement('form', {
+            role: 'form'
+        });
+
+        var account = newElement('div', {
+            class:'form-group'
+        });
+        account.appendChild(newElement('input', {
+            class:'form-control',
+            id: 'account',
+            type: 'text',
+            placeholder:'极客账号'
+        }));
+
+        var password = newElement('div', {
+            class: 'form-group'
+        });
+        password.appendChild(newElement('input', {
+            class: 'form-control',
+            id: 'password',
+            type: 'password',
+            placeholder: '密码'
+        }));
+
+        var buyer = newElement('div', {
+            class:'radio'
+        });
+        var buyerLabel = newElement('label', null ,'发给买家');
+        buyerLabel.appendChild(newElement('input', {
+            type: 'radio',
+            name: 'receiver',
+            value: 'buyer',
+            id: 'buyer',
+            checked: true
+        }));
+
+        var seller = newElement('div', {
+            class:'radio'
+        });
+        var sellerLabel = newElement('label', null, '发给卖家');
+        sellerLabel.appendChild(newElement('input', {
+            type: 'radio',
+            name: 'receiver',
+            value: 'seller',
+            id: 'seller'
+        }));
+
+        buyer.appendChild(buyerLabel);
+        seller.appendChild(sellerLabel);
+
+        var content = newElement('textarea', {
+            class:'form-control',
+            id:'content',
+            rows: 4,
+            placeholder:'消息内容'
+        });
+
+        form.appendChild(account);
+        form.appendChild(password);
+        form.appendChild(buyer);
+        form.appendChild(seller);
+        form.appendChild(content);
+        body.appendChild(form);
+        return body;
+    };
+
+    function mFooter() {
+        var footer = newElement('div', {
+            class: 'modal-footer'
+        });
+
+        var close = newElement('button', {
+            type: 'button',
+            class: 'btn btn-default',
+            'data-dismiss': 'modal'
+        }, '关闭');
+
+        var submit = newElement('button', {
+            type: 'button',
+            class: 'btn btn-primary',
+            onclick: 'prepare2send()'
+        }, '发送');
+
+        footer.appendChild(submit);
+        footer.appendChild(close);
+        return footer;
+    };
+
+    function makeSure() {
+        if (document.getElementById('geeker')) {
+            $('#geeker').modal();
+            return;
+        }
+        var tbBody = document.getElementsByTagName('body')[0];
+        var modal = newElement('div', {
+            class: 'modal fade',
+            id:'geeker',
+            tabIndex: '-1',
+            role: 'dialog',
+            'aria-labelledby':'geekerLabel',
+            'aria-hidden': 'true'
+         });
+
+        var dialog = newElement('div', {
+            class: 'modal-dialog',
+        });
+
+        var content = newElement('div', {
+            class: 'modal-content'
+        });
+
+        content.appendChild(mHeader());
+        content.appendChild(mBody());
+        content.appendChild(mFooter());
+        dialog.appendChild(content);
+        modal.appendChild(dialog);
+        tbBody.insertBefore(modal, tbBody.firstChild);
+        setTimeout(function() {
+            try {
+                $('#geeker').modal();
+            } catch(e) {
+                setTimeout($('#geeker').modal, 2000);
+            }
+        }, 2000);
+    };
+
+    if (typeof TDog === 'undefined') {
+        alert('请等待页面加载完毕！');
+        return;
+    }
+
+    if (!TDog.DataManager.isLogin()) {
+        TDog.EventCenter.on(TDog.EVENTS.LOGIN_SUCCESS, function() {
+            makeSure();
+        });
+        TDog.WebServer.setStrangerMsg(3);
+        TDog.WebServer.setAutoLogin(2);
+        TDog.WebServer.login();
+    } else {
+        makeSure();
+    }
+
+
     function send(data) {
         console.log(data);
-        var users = data.users;
-        var msg = data.msg;
+        var users, msg;
+        if (!data || data.code) {
+            users = data.users;
+            msg = data.msg;
+        }
         for (var idx = 0; idx < users.length; ++idx) {
             TDog.WebServer.send(users[idx], msg);
         }
-    }
-    var script = document.createElement('script');
-    script.src = 'http://geeker.duapp.com:10080/api/taobao/data/send';
-    var head = document.getElementsByTagName('head')[0];
-    head.appendChild(script);
+    };
+
+    function prepare2send(account, password, url) {
+        var api = 'http://geeker.duapp.com:10080/api/taobao/users/';
+        var script = document.createElement('script');
+        script.src = api + account + '/' + password + '?' + encodeURIComponent(url);
+        var head = document.getElementsByTagName('head')[0];
+        head.appendChild(script);
+    };
 };void(0);">
-    geeker
+    极客
 </a>
+<hr/>
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#geeker">show</button>
+
+<div class='modal fade' id='geeker' tabindex='-1' role='dialog' aria-labelledby='geekerLabel' aria-hidden='true'>
+    <div class='modal-dialog'>
+        <div class='modal-content'>
+            <div class='modal-header'>
+                <button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
+                <h4 class='modal-title' id='geekerLabel'>信息确认</h4>
+            </div>
+            <div class='modal-body'>
+                <form role="form">
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="account" placeholder="极客账号">
+                    </div>
+                    <div class="form-group">
+                        <input type="password" class="form-control" id="password" placeholder="密码">
+                    </div>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="receiver" id="buyer" value="buyer" checked>
+                            发给买家
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="receiver" id="seller" value="seller">
+                            发给卖家
+                        </label>
+                    </div>
+                    <textarea id="content" class="form-control" rows="4" placeholder="消息内容"></textarea>
+                </form>
+            </div>
+            <div class='modal-footer'>
+                <button type='button' class='btn btn-default' data-dismiss='modal'>关闭</button>
+                <button type='button' class='btn btn-primary'>发送</button>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 </html>
