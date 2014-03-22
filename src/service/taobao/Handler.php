@@ -9,28 +9,32 @@ namespace src\service\taobao;
 
 
 abstract class Handler {
+    private $nextPage = false;
     /**
-     * @var Consumer
+     * @var Handler
      */
-    protected $consumer;
-    private $next = false;
+    private $handler;
 
-    public function __construct(Consumer $consumer) {
-        $this->consumer = $consumer;
+    public function __construct(Handler $handler = null) {
+        $this->handler = $handler;
     }
 
     public function handle($data) {
-        $this->next = false;
-        return $this->handling($data);
+        $this->nextPage = false;
+        $data = $this->handling($data);
+        if (is_null($this->handler)) {
+            return $data;
+        }
+        return $this->handler->handle($data);
     }
 
     protected abstract function handling($data);
 
     protected function setPage($max, $current) {
-        $this->next = $max > $current;
+        $this->nextPage = $max > $current;
     }
 
-    public function next() {
-        return $this->next;
+    public function nextPage() {
+        return $this->nextPage;
     }
 }

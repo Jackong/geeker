@@ -8,6 +8,7 @@
 namespace src\service\taobao\handler;
 
 
+use src\common\Log;
 use src\service\taobao\Handler;
 
 class Item extends Handler {
@@ -15,8 +16,8 @@ class Item extends Handler {
     public function handling($data) {
         $data = json_decode($data, true);
         if (is_null($data) || !isset($data['status']) || !isset($data['status']['code']) || $data['status']['code'] != 200) {
-            echo "Bad data", "\n";
-            return false;
+            Log::error('Bad data');
+            return array();
         }
         if (isset($data['page'])) {
             $this->setPage($data['page']['totalPage'], $data['page']['currentPage']);
@@ -27,16 +28,7 @@ class Item extends Handler {
         if (is_null($data['itemList'])) {
             $data['itemList'] = array();
         }
-        $items = array_merge($data['mallItemList'], $data['itemList']);
-        if (empty($items)) {
-            echo "Empty items", "\n";
-            return false;
-        }
-
-
-        $this->consumer->consume($items);
-
-        return true;
+        return array_merge($data['mallItemList'], $data['itemList']);
     }
 }
 

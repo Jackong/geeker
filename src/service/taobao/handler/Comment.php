@@ -16,13 +16,12 @@ class Comment extends Handler {
         $data = trim($data, "()");
         $data = json_decode($data, true);
         if (!isset($data['comments'])) {
-            return false;
+            return array();
         }
         if (isset($data['maxPage']) && isset($data['currentPageNum'])) {
             $this->setPage($data['maxPage'], $data['currentPageNum']);
         }
-        $this->consumer->consume($data['comments']);
-        return true;
+        return $data['comments'];
     }
 
 }
