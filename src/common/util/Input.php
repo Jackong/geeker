@@ -9,6 +9,7 @@ namespace src\common\util;
 
 
 use Slim\Slim;
+use src\common\Log;
 
 class Input {
     public static function get($name, $pattern = null, $default = null) {

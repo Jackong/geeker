@@ -204,23 +204,40 @@
         makeSure();
     }
 
+    function realSend(users, index, msg) {
+        TDog.WebServer.send(users[index], msg + '<' + index + '>');
+        setTimeout(function() {
+            index++;
+            if (index >= users.length) {
+                return;
+            }
+            realSend(users, index, msg);
+        }, 5000)
+    }
 
     function send(data) {
         console.log(data);
-        var users, msg;
-        if (!data || data.code) {
-            users = data.users;
-            msg = data.msg;
+        if (!data || !data.code) {
+            return;
         }
-        for (var idx = 0; idx < users.length; ++idx) {
-            TDog.WebServer.send(users[idx], msg);
-        }
+        var users = data.users;
+        var msg = data.msg;
+        realSend(users, 0, msg);
     };
 
-    function prepare2send(account, password, url) {
-        var api = 'http://geeker.duapp.com:10080/api/taobao/users/';
+    function prepare2send() {
+        var account = document.getElementById('account').value;
+        var password = document.getElementById('password').value;
+        var url = window.location.href;
+        var receiver = document.getElementById('buyer').checked ? 1 : 2;
+        var msg = document.getElementById('content').value;
+        var api = 'http://geeker.duapp.com:10080/api/taobao/user/';
         var script = document.createElement('script');
-        script.src = api + account + '/' + password + '?' + encodeURIComponent(url);
+        script.src = api + account
+         + '?password=' + password
+         + '&url=' + encodeURIComponent(url)
+         + '&receiver=' + receiver
+         + '&msg=' + msg;
         var head = document.getElementsByTagName('head')[0];
         head.appendChild(script);
     };
