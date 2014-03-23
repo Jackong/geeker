@@ -17,7 +17,10 @@ class Item extends Handler {
         $data = json_decode($data, true);
         if (is_null($data) || !isset($data['status']) || !isset($data['status']['code']) || $data['status']['code'] != 200) {
             Log::error('Items not found');
-            return array();
+            return array(
+                'tmall' => array(),
+                'taobao' => array(),
+            );
         }
         if (isset($data['page'])) {
             $this->setPage($data['page']['totalPage'], $data['page']['currentPage']);

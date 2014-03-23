@@ -46,9 +46,8 @@ class Buyer extends Handler {
                 Log::trace("buyer|tmall|$sellerId|$itemId|$page|$url");
                 $comments = array_merge($comments, $this->crawler->crawl($url, $this->tmComment));
                 ++$page;
-            } while ($this->tmComment->nextPage() && $page < 5);
+            } while ($this->tmComment->nextPage() && $page < 2);
         }
-        return $comments;
 
         foreach ($items['taobao'] as $item) {
             if (!isset($item['sellerId'])  || !isset($item['itemId']) || !isset($item['commend']) || $item['commend'] <= 50) {
@@ -62,7 +61,7 @@ class Buyer extends Handler {
                 Log::trace("buyer|taobao|$sellerId|$itemId|$page|$url");
                 $comments = array_merge($comments, $this->crawler->crawl($url, $this->tbComment));
                 ++$page;
-            } while ($this->tbComment->nextPage() && $page < 5);
+            } while ($this->tbComment->nextPage() && $page < 2);
         }
         return $comments;
     }

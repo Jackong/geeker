@@ -46,12 +46,12 @@ class User {
             Log::debug("crawl|$id|$receiver|$page|$msg|$url|");
             $users = array_merge($users, $crawler->crawl($url, $handler));
             ++$page;
-        } while($handler->nextPage() && $page < 5);
+        } while($handler->nextPage() && $page < 2);
         //$users = array($users[0], $users[1]);
         echo "send(" . json_encode(array(
                 'code' => true,
                 'users' => array_values(array_unique($users)),
                 'msg' => $msg,
-            )) . ");";
+        )) . ");";
     }
 } 
