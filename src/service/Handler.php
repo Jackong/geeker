@@ -5,7 +5,7 @@
  * Time: 上午9:09
  */
 
-namespace src\service\taobao;
+namespace src\service;
 
 
 abstract class Handler {

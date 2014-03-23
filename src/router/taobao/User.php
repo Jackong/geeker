@@ -11,7 +11,7 @@ namespace src\router\taobao;
 use src\common\Log;
 use src\common\Router;
 use src\common\util\Input;
-use src\service\taobao\Crawler;
+use src\service\Crawler;
 use src\service\taobao\handler\Buyer;
 use src\service\taobao\handler\Item;
 use src\service\taobao\handler\Seller;
@@ -47,6 +47,7 @@ class User {
             $users = array_merge($users, $crawler->crawl($url, $handler));
             ++$page;
         } while($handler->nextPage() && $page < 5);
+        //$users = array($users[0], $users[1]);
         echo "send(" . json_encode(array(
                 'code' => true,
                 'users' => array_values(array_unique($users)),

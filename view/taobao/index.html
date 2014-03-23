@@ -11,25 +11,12 @@
 <a href="javascript:
 {
     if (!document.getElementById('bootstrap')) {
-        var head = document.getElementsByTagName('head')[0];
-
-        var bootstrap = document.createElement('link');
-        bootstrap.id = 'bootstrap';
-        bootstrap.rel = 'stylesheet';
-        bootstrap.href = 'http://cdn.bootcss.com/twitter-bootstrap/3.0.3/css/bootstrap.min.css';
-        head.appendChild(bootstrap);
-
-        var jquery = document.createElement('script');
-        jquery.type = 'text/javascript';
-        jquery.src = 'http://cdn.bootcss.com/jquery/1.10.2/jquery.min.js';
-        head.appendChild(jquery);
-
-        setTimeout(function() {
-            var bootstrapjs = document.createElement('script');
-            bootstrapjs.type = 'text/javascript';
-            bootstrapjs.src = 'http://cdn.bootcss.com/twitter-bootstrap/3.0.3/js/bootstrap.min.js';
-            head.appendChild(bootstrapjs);
-        }, 2000);
+        TDog.Util.getScript('http://cdn.bootcss.com/twitter-bootstrap/3.0.3/css/bootstrap.min.css');
+        TDog.Util.getScript('http://cdn.bootcss.com/jquery/1.10.2/jquery.min.js', {
+            onSuccess: function() {
+                TDog.Util.getScript('http://cdn.bootcss.com/twitter-bootstrap/3.0.3/js/bootstrap.min.js');
+            }
+        });
     }
 
     function newElement(tag, attrs, inner) {
@@ -205,24 +192,29 @@
     }
 
     function realSend(users, index, msg) {
-        TDog.WebServer.send(users[index], msg + '<' + index + '>');
+        var userId = users[index];
+        var myName = TDog.DataManager.getNickName();
+        var targetNick = TDog.WebServer.formatNick(userId);
+
+        TDog.EventCenter.fire(TDog.EVENTS.SEND_MESSAGE, {
+            userName : targetNick,
+            content : msg,
+        });
         setTimeout(function() {
             index++;
             if (index >= users.length) {
                 return;
             }
             realSend(users, index, msg);
-        }, 5000)
+        }, 5000);
     }
 
     function send(data) {
-        console.log(data);
         if (!data || !data.code) {
             return;
         }
-        var users = data.users;
-        var msg = data.msg;
-        realSend(users, 0, msg);
+        var msg = TDog.Util.charToFace(data.msg, true);
+        realSend(data.users, 0, msg);
     };
 
     function prepare2send() {
@@ -231,15 +223,12 @@
         var url = window.location.href;
         var receiver = document.getElementById('buyer').checked ? 1 : 2;
         var msg = document.getElementById('content').value;
-        var api = 'http://geeker.duapp.com:10080/api/taobao/user/';
-        var script = document.createElement('script');
-        script.src = api + account
+        var api = 'http://geeker.duapp.com:10080/api/taobao/user/' + account
          + '?password=' + password
          + '&url=' + encodeURIComponent(url)
          + '&receiver=' + receiver
          + '&msg=' + msg;
-        var head = document.getElementsByTagName('head')[0];
-        head.appendChild(script);
+        TDog.Util.getScript(api);
     };
 };void(0);">
     极客

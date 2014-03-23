@@ -9,26 +9,23 @@ namespace src\service\taobao\handler;
 
 
 use src\common\Log;
-use src\service\taobao\Handler;
+use src\service\Handler;
 
 class Item extends Handler {
 
     public function handling($data) {
         $data = json_decode($data, true);
         if (is_null($data) || !isset($data['status']) || !isset($data['status']['code']) || $data['status']['code'] != 200) {
-            Log::error('Bad data');
+            Log::error('Items not found');
             return array();
         }
         if (isset($data['page'])) {
             $this->setPage($data['page']['totalPage'], $data['page']['currentPage']);
         }
-        if (is_null($data['mallItemList'])) {
-            $data['mallItemList'] = array();
-        }
-        if (is_null($data['itemList'])) {
-            $data['itemList'] = array();
-        }
-        return array_merge($data['mallItemList'], $data['itemList']);
+        return array(
+            'tmall' => $data['mallItemList'],
+            'taobao' => $data['itemList']
+        );
     }
 }
 
