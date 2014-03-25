@@ -31,6 +31,25 @@ class Buyer extends Handler {
         $this->crawler = new Crawler();
     }
 
+    public function dateRange($min, $max) {
+        $date = strtotime(DATE);
+        if ($min <= 0) {
+            $min = strtotime("+1 days" , $date);
+        } else {
+            $min--;
+            $min = strtotime("-$min days", $date);
+        }
+        if ($max <= 0) {
+            $max = strtotime("+1 days", $date);
+        } else {
+            $max--;
+            $max = strtotime("-$max days", $date);
+        }
+        $this->tbComment->dateRange($min, $max);
+        $this->tmComment->dateRange($min, $max);
+        return $this;
+    }
+
     protected function handling($items)
     {
         $comments = array();
@@ -46,7 +65,7 @@ class Buyer extends Handler {
                 Log::trace("buyer|tmall|$sellerId|$itemId|$page|$url");
                 $comments = array_merge($comments, $this->crawler->crawl($url, $this->tmComment));
                 ++$page;
-            } while ($this->tmComment->nextPage() && $page < 3);
+            } while ($this->tmComment->nextPage() && $page <= 2);
         }
 
         foreach ($items['taobao'] as $item) {
@@ -61,7 +80,7 @@ class Buyer extends Handler {
                 Log::trace("buyer|taobao|$sellerId|$itemId|$page|$url");
                 $comments = array_merge($comments, $this->crawler->crawl($url, $this->tbComment));
                 ++$page;
-            } while ($this->tbComment->nextPage() && $page < 3);
+            } while ($this->tbComment->nextPage() && $page <= 2);
         }
         return $comments;
     }

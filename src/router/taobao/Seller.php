@@ -12,11 +12,9 @@ use src\common\Log;
 use src\common\Router;
 use src\common\util\Input;
 use src\service\Crawler;
-use src\service\taobao\handler\Buyer;
 use src\service\taobao\handler\Item;
-use src\service\taobao\handler\Seller;
 
-class User {
+class Seller {
     use Router;
     public function get($id) {
         $password = Input::get('password');
@@ -27,8 +25,7 @@ class User {
         if (false === strpos($url, 'http://list.taobao.com/itemlist')) {
             return;
         }
-        $url .= '&json=on';
-        $receiver = Input::get('receiver');
+        $url .= '&s=0&json=on';
         $msg = iconv("GBK", "UTF-8", Input::get('msg'));
 
         $minTrade = Input::get('minTrade', "/^[0-9]{1,5}$/", 100);
@@ -43,11 +40,7 @@ class User {
             return;
         }
 
-        if ($receiver == 1) {
-            $handler = new Item(new Buyer());
-        } else {
-            $handler = new Item(new Seller());
-        }
+        $handler = new Item(new \src\service\taobao\handler\Seller());
 
         $handler->tradeRange($minTrade, $maxTrade)
             ->commendRange($minComment, $maxComment);
@@ -58,10 +51,10 @@ class User {
         do {
             $num = ($page - 1) * 96;
             $url = preg_replace("/(&s=[0-9]+&)/", "&s=$num&", $url);
-            Log::debug("crawl|$id|$receiver|$page|$msg|$url|");
+            Log::debug("seller|$id|$page|$msg|$url");
             $users = array_merge($users, $crawler->crawl($url, $handler));
             ++$page;
-        } while($handler->nextPage() && $page < 3);
+        } while($handler->nextPage() && $page <= 2);
         //$users = array($users[0], $users[1]);
         echo "send(" . json_encode(array(
                 'code' => true,
