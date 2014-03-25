@@ -11,7 +11,8 @@ namespace src\config;
 use src\common\Config;
 use src\common\Log;
 
-class App extends Config {
+class App {
+    use Config;
     protected static function prod()
     {
         return array(
