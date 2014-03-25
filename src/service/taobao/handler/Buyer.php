@@ -46,7 +46,7 @@ class Buyer extends Handler {
                 Log::trace("buyer|tmall|$sellerId|$itemId|$page|$url");
                 $comments = array_merge($comments, $this->crawler->crawl($url, $this->tmComment));
                 ++$page;
-            } while ($this->tmComment->nextPage() && $page < 2);
+            } while ($this->tmComment->nextPage() && $page < 3);
         }
 
         foreach ($items['taobao'] as $item) {
@@ -61,7 +61,7 @@ class Buyer extends Handler {
                 Log::trace("buyer|taobao|$sellerId|$itemId|$page|$url");
                 $comments = array_merge($comments, $this->crawler->crawl($url, $this->tbComment));
                 ++$page;
-            } while ($this->tbComment->nextPage() && $page < 2);
+            } while ($this->tbComment->nextPage() && $page < 3);
         }
         return $comments;
     }

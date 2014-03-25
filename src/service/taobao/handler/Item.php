@@ -13,6 +13,23 @@ use src\service\Handler;
 
 class Item extends Handler {
 
+    private $minTradeNum = 0;
+    private $maxTradeNum = 0;
+    private $minCommend = 0;
+    private $maxCommend = 0;
+
+    public function tradeRange($min, $max) {
+        $this->minTradeNum = $min;
+        $this->maxTradeNum = $max;
+        return $this;
+    }
+
+    public function commendRange($min, $max) {
+        $this->minCommend = $min;
+        $this->maxCommend = $max;
+        return $this;
+    }
+
     public function handling($data) {
         $data = json_decode($data, true);
         if (is_null($data) || !isset($data['status']) || !isset($data['status']['code']) || $data['status']['code'] != 200) {
@@ -25,10 +42,36 @@ class Item extends Handler {
         if (isset($data['page'])) {
             $this->setPage($data['page']['totalPage'], $data['page']['currentPage']);
         }
+
         return array(
-            'tmall' => $data['mallItemList'],
-            'taobao' => $data['itemList']
+            'tmall' => $this->filter($data['mallItemList']),
+            'taobao' => $this->filter($data['itemList'])
         );
+    }
+
+    private function filter($items) {
+        $newItems = array();
+        if (is_null($items)) {
+            return $newItems;
+        }
+        foreach ($items as $item) {
+            if ($this->minTradeNum > $item['tradeNum']) {
+                continue;
+            }
+
+            if ($this->minCommend > $item['commend']) {
+                continue;
+            }
+
+            if ($this->maxTradeNum > 0 && $item['tradeNum'] > $this->maxTradeNum) {
+                continue;
+            }
+            if ($this->maxCommend > 0 && $item['commend'] > $this->maxCommend) {
+                continue;
+            }
+            $newItems[] = $item;
+        }
+        return $newItems;
     }
 }
 

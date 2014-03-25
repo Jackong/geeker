@@ -8,7 +8,7 @@
 namespace src\service;
 
 class Crawler {
-    public function crawl($url, Handler $handler, $conv = true) {
+    public function crawl($url, Handler $handler) {
         $ch = curl_init();
 
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -28,7 +28,7 @@ class Crawler {
         curl_close($ch);
 
         $data = trim($data);
-        $data = $conv ? iconv("GBK", "UTF-8", $data) : $data;
+        $data = mb_check_encoding($data, 'UTF-8') ? $data : iconv("GBK", "UTF-8", $data);
         return $handler->handle($data);
     }
 } 

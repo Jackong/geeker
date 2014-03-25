@@ -31,11 +31,26 @@ class User {
         $receiver = Input::get('receiver');
         $msg = iconv("GBK", "UTF-8", Input::get('msg'));
 
+        $minTrade = Input::get('minTrade', "/^[0-9]{1,5}$/", 100);
+        $maxTrade = Input::get('maxTrade', "/^[0-9]{1,7}$/", 0);
+        if ($minTrade > $maxTrade && $maxTrade != 0) {
+            return;
+        }
+
+        $minComment = Input::get('minComment', "/^[0-9]{1,5}$/", 10);
+        $maxComment = Input::get('maxComment', "/^[0-9]{1,7}$/", 0);
+        if ($minComment > $maxComment && $maxComment != 0) {
+            return;
+        }
+
         if ($receiver == 1) {
             $handler = new Item(new Buyer());
         } else {
             $handler = new Item(new Seller());
         }
+
+        $handler->tradeRange($minTrade, $maxTrade)
+            ->commendRange($minComment, $maxComment);
 
         $users = array();
         $crawler = new Crawler();
@@ -46,7 +61,7 @@ class User {
             Log::debug("crawl|$id|$receiver|$page|$msg|$url|");
             $users = array_merge($users, $crawler->crawl($url, $handler));
             ++$page;
-        } while($handler->nextPage() && $page < 2);
+        } while($handler->nextPage() && $page < 3);
         //$users = array($users[0], $users[1]);
         echo "send(" . json_encode(array(
                 'code' => true,
