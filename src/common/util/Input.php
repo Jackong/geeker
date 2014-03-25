@@ -39,6 +39,9 @@ class Input {
         if (is_null($value)) {
             return null;
         }
+        if (is_null($pattern)) {
+            return $value;
+        }
         if (preg_match($pattern, $value, $matches)) {
             return $value;
         }
