@@ -10,6 +10,8 @@
 <hr/>
 <a href="javascript:
 {
+    var api = 'http://geeker.duapp.com:10080/api';
+
     if (!document.getElementById('bootstrap')) {
         TDog.Util.getScript('http://cdn.bootcss.com/twitter-bootstrap/3.0.3/css/bootstrap.min.css');
         TDog.Util.getScript('http://cdn.bootcss.com/jquery/1.10.2/jquery.min.js', {
@@ -232,22 +234,25 @@
     }
 
     function send(data) {
-        if (!data || !data.code) {
+        if (!data) {
             return;
         }
-        var msg = TDog.Util.charToFace(data.msg, true);
-        realSend(data.users, 0, msg);
+        var msg = TDog.Util.charToFace(document.getElementById('content').value, true);
+        console.log(data);
     };
+
+    function users() {
+        TDog.Util.getScript(api + '/taobao/user');
+        setTimeout(users, 50000);
+    }
 
     function prepare2send() {
         var receiver = document.getElementById('buyer').checked ? 'buyer' : 'seller';
-        var api = 'http://geeker.duapp.com:10080/api/taobao/' + receiver + '/' + document.getElementById('account').value
+        TDog.Util.getScript(api + '/taobao/' + receiver + '/' + document.getElementById('account').value
          + '?password=' + document.getElementById('password').value
          + '&trade=' + document.getElementById('trade').value
          + '&recent=' + document.getElementById('recent').value
-         + '&msg=' + document.getElementById('content').value
-         + '&url=' + encodeURIComponent(window.location.href);
-        TDog.Util.getScript(api);
+         + '&url=' + encodeURIComponent(window.location.href));
     };
 };void(0);">
     极客

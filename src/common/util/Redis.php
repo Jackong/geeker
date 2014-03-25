@@ -13,28 +13,30 @@ use src\config\Service;
 
 class Redis {
     /**
-     * @param $dbname
+     * @param $name
      * @return null|\Redis
      */
-    public static function select($dbname) {
+    public static function select($name) {
         $redis = new \Redis();
         $service = Service::get();
-        if (!isset($service['redis'][$dbname])) {
-            Log::warn("$dbname not exist");
+        if (!isset($service['redis'][$name])) {
+            Log::warn("$name not exist");
             return null;
         }
-        $config = $service['redis'][$dbname];
+        $config = $service['redis'][$name];
         $ret = $redis->pconnect($config['host'], $config['port']);
         if ($ret === false) {
-            Log::warn($redis->getLastError() . "|" . $dbname);
+            Log::warn($redis->getLastError() . "|" . $name);
             return null;
         }
 
         $ret = $redis->auth($service['ak'] . "-" . $service['sk'] . "-" . $config['name']);
         if ($ret === false) {
-            Log::warn($redis->getLastError() . "|" . $dbname);
+            Log::warn($redis->getLastError() . "|" . $name);
             return null;
         }
+
+        $redis->setOption(\Redis::OPT_PREFIX, "$name:");
 
         return $redis;
     }

@@ -4,28 +4,33 @@
  * Date: 14-3-25
  * Time: 下午1:04
  */
-if ($argc < 3) {
-    die("usage: $argv[0] url maxPage\n");
+if ($argc < 4) {
+    die("usage: $argv[0] <account> <trade> <url>\n");
 }
 require_once __DIR__ . "/../../../../view/env.php";
 
-$url = $argv[1];
+$account = $argv[1];
+$trade = $argv[2];
+$url = $argv[3];
 $url .= "&s=0&json=on";
-
-$maxPage = $argv[2];
 
 $handler = new \src\service\taobao\handler\Item(new \src\service\taobao\handler\Seller());
 $handler->minTradeNum(100);
 
-$users = array();
+$redis = \src\common\util\Redis::select('ww');
 $crawler = new \src\service\Crawler();
 $page = 1;
 do {
     $num = ($page - 1) * 96;
     $url = preg_replace("/(&s=[0-9]+&)/", "&s=$num&", $url);
-    \src\common\Log::debug("crawl|$page|$url");
-    $users = array_merge($users, $crawler->crawl($url, $handler));
+    \src\common\Log::debug("seller|$page|$url");
+    $users = $crawler->crawl($url, $handler);
+    $redis->multi();
+    foreach ($users as $user) {
+        $redis->sAdd($account, $users);
+    }
+    $redis->exec();
     ++$page;
-} while($handler->nextPage() && $page <= $maxPage);
+} while($handler->nextPage() && $page <= 3);
 
-echo "count:" . count(array_values(array_unique($users))), "\n";
+echo "count:" . $redis->sCard($account), "\n";

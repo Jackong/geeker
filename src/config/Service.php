@@ -17,7 +17,7 @@ class Service extends Config {
             'ak' => 'TixdQ5pd2r9Su4Q1G0oUCEtO',
             'sk' => 'smUmBPlexEZNcAGyGkYHTcbBueYTnVMA',
             'redis' => array(
-                'sender' => array(
+                'ww' => array(
                     'host' => 'redis.duapp.com',
                     'port' => 80,
                     'name' => 'uulQAzmFiQjGOebmXKxi',
@@ -30,7 +30,7 @@ class Service extends Config {
     {
         return array(
             'redis' => array(
-                'sender' => array(
+                'ww' => array(
                     'name' => 'sender',
                     'host' => '127.0.0.1',
                     'port' => 6379,

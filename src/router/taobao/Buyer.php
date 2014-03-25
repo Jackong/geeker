@@ -8,52 +8,26 @@
 namespace src\router\taobao;
 
 
+use Slim\Slim;
 use src\common\Log;
 use src\common\Router;
 use src\common\util\Input;
-use src\service\Crawler;
-use src\service\taobao\handler\Item;
 
 class Buyer {
     use Router;
     public function get($id) {
-        $password = Input::get('password');
-        if ($id !== 'geeker' || $password !== 'daisy') {
-            return;
-        }
         $url = urldecode(Input::get('url'));
         if (false === strpos($url, 'http://list.taobao.com/itemlist')) {
             return;
         }
-        $url .= '&s=0&json=on';
-        $msg = iconv("GBK", "UTF-8", Input::get('msg'));
 
-        $minTrade = Input::get('trade', "/^[0-9]{1,2}$/", 10);
+        Slim::getInstance()->setCookie('id', $id, "3 days", "/");
+        $trade = Input::get('trade', "/^[0-9]{1,2}$/", 10);
 
         $recent = Input::get('recent', "/^[0-9]{1,2}$/", 0);
 
-        $buyer = new \src\service\taobao\handler\Buyer();
-        $buyer->recent($recent);
+        shell_exec("php " . PROJECT . "/src/tool/job/taobao/buyer.php $id $recent $trade \"$url\" >/dev/null 2>&1");
 
-        $handler = new Item($buyer);
-
-        $handler->minTradeNum($minTrade);
-
-        $users = array();
-        $crawler = new Crawler();
-        $page = 1;
-        do {
-            $num = ($page - 1) * 96;
-            $url = preg_replace("/(&s=[0-9]+&)/", "&s=$num&", $url);
-            Log::debug("buyer|$id|$page|$msg|$url");
-            $users = array_merge($users, $crawler->crawl($url, $handler));
-            ++$page;
-        } while($handler->nextPage() && $page <= 1);
-        $users = array($users[0], $users[1]);
-        echo "send(" . json_encode(array(
-                'code' => true,
-                'users' => array_values(array_unique($users)),
-                'msg' => $msg,
-        )) . ");";
+        echo "users()";
     }
 } 
