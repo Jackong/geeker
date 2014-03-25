@@ -7,11 +7,7 @@
 
 namespace src\common;
 
-
-use src\config\App;
-
-class Config {
-    protected static $config;
+trait Config {
 
     public static function get($keys = "") {
         $config = static::config();
@@ -30,15 +26,12 @@ class Config {
     }
 
     protected static function config() {
-        if (isset(static::$config)) {
-            return static::$config;
-        }
-        static::$config = static::prod();
-        if (!App::get('prod')) {
+        $config = static::prod();
+        if (false) {
             $dev = static::dev();
-            static::$config = array_replace_recursive(static::$config, $dev);
+            $config = array_replace_recursive($config, $dev);
         }
-        return static::$config;
+        return $config;
     }
 
     protected static function prod() {
