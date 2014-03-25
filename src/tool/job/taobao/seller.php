@@ -27,7 +27,7 @@ do {
     $users = $crawler->crawl($url, $handler);
     $redis->multi();
     foreach ($users as $user) {
-        $redis->sAdd($account, $users);
+        $redis->sAdd($account, $user);
     }
     $redis->exec();
     ++$page;

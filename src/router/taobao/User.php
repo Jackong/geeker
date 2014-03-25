@@ -25,7 +25,13 @@ class User {
             $redis->sPop($id);
         }
         $users = $redis->exec();
-
-        echo "send(" . json_encode($users) . ")";
+        $result = array();
+        foreach ($users as $user) {
+            if (false === $user) {
+                continue;
+            }
+            $result[] = $user;
+        }
+        echo "send(" . json_encode($result) . ")";
     }
 } 

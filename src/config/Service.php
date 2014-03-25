@@ -10,7 +10,8 @@ namespace src\config;
 
 use src\common\Config;
 
-class Service extends Config {
+class Service {
+    use Config;
     protected static function prod()
     {
         return array(
@@ -31,7 +32,7 @@ class Service extends Config {
         return array(
             'redis' => array(
                 'ww' => array(
-                    'name' => 'sender',
+                    'name' => 'ww',
                     'host' => '127.0.0.1',
                     'port' => 6379,
                 )

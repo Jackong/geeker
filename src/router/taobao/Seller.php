@@ -24,7 +24,7 @@ class Seller {
         $trade = Input::get('trade', "/^[0-9]{1,2}$/", 10);
 
 
-        shell_exec("php " . PROJECT . "/src/tool/job/taobao/seller.php $id $trade \"$url\" >/dev/null 2>&1");
+        exec("php " . PROJECT . "/src/tool/job/taobao/seller.php $id $trade \"$url\" >/dev/null 2>&1 &");
 
         echo "users()";
     }

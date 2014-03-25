@@ -26,7 +26,7 @@ class Buyer {
 
         $recent = Input::get('recent', "/^[0-9]{1,2}$/", 0);
 
-        shell_exec("php " . PROJECT . "/src/tool/job/taobao/buyer.php $id $recent $trade \"$url\" >/dev/null 2>&1");
+        exec("php " . PROJECT . "/src/tool/job/taobao/buyer.php $id $recent $trade \"$url\" >/dev/null 2>&1 &");
 
         echo "users()";
     }
