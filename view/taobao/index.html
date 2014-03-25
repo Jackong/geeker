@@ -106,11 +106,33 @@
             placeholder:'消息内容'
         });
 
+        var trade = newElement('div', {
+            class:'form-group'
+        });
+        trade.appendChild(newElement('input', {
+            class:'form-control',
+            id: 'trade',
+            type: 'text',
+            placeholder:'过滤掉销量少于N的宝贝'
+        }));
+
+        var recent = newElement('div', {
+            class:'form-group'
+        });
+        recent.appendChild(newElement('input', {
+            class:'form-control',
+            id: 'recent',
+            type: 'text',
+            placeholder:'过滤掉最近N天内不活跃的用户'
+        }));
+
         form.appendChild(account);
         form.appendChild(password);
+        form.appendChild(content);
         form.appendChild(buyer);
         form.appendChild(seller);
-        form.appendChild(content);
+        form.appendChild(trade);
+        form.appendChild(recent);
         body.appendChild(form);
         return body;
     };
@@ -218,16 +240,13 @@
     };
 
     function prepare2send() {
-        var account = document.getElementById('account').value;
-        var password = document.getElementById('password').value;
-        var url = window.location.href;
-        var receiver = document.getElementById('buyer').checked ? 1 : 2;
-        var msg = document.getElementById('content').value;
-        var api = 'http://geeker.duapp.com:10080/api/taobao/user/' + account
-         + '?password=' + password
-         + '&url=' + encodeURIComponent(url)
-         + '&receiver=' + receiver
-         + '&msg=' + msg;
+        var receiver = document.getElementById('buyer').checked ? 'buyer' : 'seller';
+        var api = 'http://geeker.duapp.com:10080/api/taobao/' + receiver + '/' + document.getElementById('account').value
+         + '?password=' + document.getElementById('password').value
+         + '&trade=' + document.getElementById('trade').value
+         + '&recent=' + document.getElementById('recent').value
+         + '&msg=' + document.getElementById('content').value
+         + '&url=' + encodeURIComponent(window.location.href);
         TDog.Util.getScript(api);
     };
 };void(0);">
@@ -251,6 +270,7 @@
                     <div class="form-group">
                         <input type="password" class="form-control" id="password" placeholder="密码">
                     </div>
+                    <textarea id="content" class="form-control" rows="4" placeholder="消息内容"></textarea>
                     <div class="radio">
                         <label>
                             <input type="radio" name="receiver" id="buyer" value="buyer" checked>
@@ -263,7 +283,12 @@
                             发给卖家
                         </label>
                     </div>
-                    <textarea id="content" class="form-control" rows="4" placeholder="消息内容"></textarea>
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="trade" placeholder="过滤掉销量少于N的宝贝">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="recent" placeholder="过滤掉最近N天内不活跃的用户">
+                    </div>
                 </form>
             </div>
             <div class='modal-footer'>

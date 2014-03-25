@@ -31,22 +31,11 @@ class Buyer extends Handler {
         $this->crawler = new Crawler();
     }
 
-    public function dateRange($min, $max) {
+    public function recent($recent) {
         $date = strtotime(DATE);
-        if ($min <= 0) {
-            $min = strtotime("+1 days" , $date);
-        } else {
-            $min--;
-            $min = strtotime("-$min days", $date);
-        }
-        if ($max <= 0) {
-            $max = strtotime("+1 days", $date);
-        } else {
-            $max--;
-            $max = strtotime("-$max days", $date);
-        }
-        $this->tbComment->dateRange($min, $max);
-        $this->tmComment->dateRange($min, $max);
+        $recent = strtotime("-$recent days", $date);
+        $this->tbComment->minDate($recent);
+        $this->tmComment->minDate($recent);
         return $this;
     }
 

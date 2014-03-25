@@ -14,19 +14,9 @@ use src\service\Handler;
 class Item extends Handler {
 
     private $minTradeNum = 0;
-    private $maxTradeNum = 0;
-    private $minCommend = 0;
-    private $maxCommend = 0;
 
-    public function tradeRange($min, $max) {
+    public function minTradeNum($min) {
         $this->minTradeNum = $min;
-        $this->maxTradeNum = $max;
-        return $this;
-    }
-
-    public function commendRange($min, $max) {
-        $this->minCommend = $min;
-        $this->maxCommend = $max;
         return $this;
     }
 
@@ -59,16 +49,6 @@ class Item extends Handler {
                 continue;
             }
 
-            if ($this->minCommend > $item['commend']) {
-                continue;
-            }
-
-            if ($this->maxTradeNum > 0 && $item['tradeNum'] > $this->maxTradeNum) {
-                continue;
-            }
-            if ($this->maxCommend > 0 && $item['commend'] > $this->maxCommend) {
-                continue;
-            }
             $newItems[] = $item;
         }
         return $newItems;

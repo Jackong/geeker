@@ -15,8 +15,7 @@ $url .= "&s=0&json=on";
 $maxPage = $argv[2];
 
 $handler = new \src\service\taobao\handler\Item(new \src\service\taobao\handler\Seller());
-$handler->tradeRange(100, 0)
-    ->commendRange(50, 0);
+$handler->minTradeNum(100);
 
 $users = array();
 $crawler = new \src\service\Crawler();

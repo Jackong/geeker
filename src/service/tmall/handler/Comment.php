@@ -13,11 +13,9 @@ use src\service\Handler;
 
 class Comment extends Handler {
     private $minDate = 0;
-    private $maxDate = 0;
 
-    public function dateRange($min, $max) {
+    public function minDate($min) {
         $this->minDate = $min;
-        $this->maxDate = $max;
     }
 
     protected function handling($data)
@@ -38,7 +36,7 @@ class Comment extends Handler {
                 continue;
             }
             $time = strtotime($comment['rateDate']);
-            if ($time < $this->maxDate || $time > $this->minDate) {
+            if ($time < $this->minDate) {
                 continue;
             }
             $comments[] = $comment['displayUserNick'];

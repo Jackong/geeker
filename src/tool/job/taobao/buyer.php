@@ -16,12 +16,10 @@ $maxPage = $argv[2];
 
 
 $buyer = new \src\service\taobao\handler\Buyer();
-$buyer->dateRange(0, 2);
+$buyer->recent(0);
 
 $handler = new \src\service\taobao\handler\Item($buyer);
-
-$handler->tradeRange(100, 0)
-    ->commendRange(50, 0);
+$handler->minTradeNum(100);
 
 $users = array();
 $crawler = new \src\service\Crawler();

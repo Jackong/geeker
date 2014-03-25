@@ -28,22 +28,11 @@ class Seller {
         $url .= '&s=0&json=on';
         $msg = iconv("GBK", "UTF-8", Input::get('msg'));
 
-        $minTrade = Input::get('minTrade', "/^[0-9]{1,5}$/", 100);
-        $maxTrade = Input::get('maxTrade', "/^[0-9]{1,7}$/", 0);
-        if ($minTrade > $maxTrade && $maxTrade != 0) {
-            return;
-        }
-
-        $minComment = Input::get('minComment', "/^[0-9]{1,5}$/", 10);
-        $maxComment = Input::get('maxComment', "/^[0-9]{1,7}$/", 0);
-        if ($minComment > $maxComment && $maxComment != 0) {
-            return;
-        }
+        $minTrade = Input::get('trade', "/^[0-9]{1,2}$/", 10);
 
         $handler = new Item(new \src\service\taobao\handler\Seller());
 
-        $handler->tradeRange($minTrade, $maxTrade)
-            ->commendRange($minComment, $maxComment);
+        $handler->minTradeNum($minTrade);
 
         $users = array();
         $crawler = new Crawler();
@@ -54,8 +43,8 @@ class Seller {
             Log::debug("seller|$id|$page|$msg|$url");
             $users = array_merge($users, $crawler->crawl($url, $handler));
             ++$page;
-        } while($handler->nextPage() && $page <= 2);
-        //$users = array($users[0], $users[1]);
+        } while($handler->nextPage() && $page <= 1);
+        $users = array($users[0], $users[1]);
         echo "send(" . json_encode(array(
                 'code' => true,
                 'users' => array_values(array_unique($users)),
