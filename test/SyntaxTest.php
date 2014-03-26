@@ -8,6 +8,8 @@
 namespace test;
 
 
+use src\common\util\Mongo;
+
 class SyntaxTest extends \PHPUnit_Framework_TestCase {
 
     public function testDate()
@@ -17,6 +19,8 @@ class SyntaxTest extends \PHPUnit_Framework_TestCase {
         $time2 = strtotime("2014/03/25/ 12:59");
         echo $time, "\n";
         echo $time2, "\n";
+        $col = Mongo::collection('geeker.account');
+        $col->count(array('account' => 'geeker'));
     }
 }
  

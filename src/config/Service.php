@@ -23,7 +23,14 @@ class Service {
                     'port' => 80,
                     'name' => 'uulQAzmFiQjGOebmXKxi',
                 )
-            )
+            ),
+            'mongo' => array(
+                'ak' => 'GXTnHcjgvKPIl1MKbdxnmcQK',
+                'sk' => '2RGpR7kuue9wCQX4oFHL8hXYnE2zpsg4',
+                'host' => 'mongo.duapp.com',
+                'port' => '8908',
+                'name' => 'RGFauSekXKrYgGCstaDB',
+            ),
         );
     }
 
@@ -36,7 +43,12 @@ class Service {
                     'host' => '127.0.0.1',
                     'port' => 6379,
                 )
-            )
+            ),
+            'mongo' => array(
+                'name' => 'user',
+                'host' => '127.0.0.1',
+                'port' => '27017',
+            ),
         );
     }
 

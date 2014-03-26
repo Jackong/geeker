@@ -1,12 +1,26 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-cn">
 <head>
-    <title></title>
-    <link rel="stylesheet" href="http://cdn.bootcss.com/twitter-bootstrap/3.0.3/css/bootstrap.min.css"/>
-    <script type="text/javascript" src="http://cdn.bootcss.com/jquery/1.10.2/jquery.min.js"></script>
-    <script type="text/javascript" src="http://cdn.bootcss.com/twitter-bootstrap/3.0.3/js/bootstrap.min.js"></script>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Geeker</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="http://cdn.bootcss.com/twitter-bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="http://cdn.bootcss.com/html5shiv/3.7.0/html5shiv.min.js"></script>
+    <script src="http://cdn.bootcss.com/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
 </head>
-<body>
+<body onload="loaded()">
+<div class="container">
+书签：
 <hr/>
 <a href="javascript:
 {
@@ -255,53 +269,116 @@
          + '&url=' + encodeURIComponent(window.location.href));
     };
 };void(0);">
-    极客
+极客
+</a>
+
+<a href="javascript:{
+    var api = 'http://geeker.duapp.com:10080/api';
+    function login(user) {
+        var username = document.getElementById('TPL_username_1');
+        var password = document.getElementById('TPL_password_1');
+        username.focus();
+        username.value = user.name;
+        password.focus();
+        password.value = user.password;
+        document.getElementById('J_SubmitStatic').click();
+    }
+    var script = document.createElement('script');
+    script.src = api + '/taobao/account';
+    var head = document.getElementsByName('head')[0];
+    head.appendChild(script);
+};void(0);">
+    自动切换登录
 </a>
 <hr/>
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#geeker">show</button>
+    <h2>关联阿里旺旺账号</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>账号</th>
+                <th>密码</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
 
-<div class='modal fade' id='geeker' tabindex='-1' role='dialog' aria-labelledby='geekerLabel' aria-hidden='true'>
-    <div class='modal-dialog'>
-        <div class='modal-content'>
-            <div class='modal-header'>
-                <button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
-                <h4 class='modal-title' id='geekerLabel'>信息确认</h4>
-            </div>
-            <div class='modal-body'>
-                <form role="form">
-                    <div class="form-group">
-                        <input type="text" class="form-control" id="account" placeholder="极客账号">
-                    </div>
-                    <div class="form-group">
-                        <input type="password" class="form-control" id="password" placeholder="密码">
-                    </div>
-                    <textarea id="content" class="form-control" rows="4" placeholder="消息内容"></textarea>
-                    <div class="radio">
-                        <label>
-                            <input type="radio" name="receiver" id="buyer" value="buyer" checked>
-                            发给买家
-                        </label>
-                    </div>
-                    <div class="radio">
-                        <label>
-                            <input type="radio" name="receiver" id="seller" value="seller">
-                            发给卖家
-                        </label>
-                    </div>
-                    <div class="form-group">
-                        <input type="text" class="form-control" id="trade" placeholder="过滤掉销量少于N的宝贝">
-                    </div>
-                    <div class="form-group">
-                        <input type="text" class="form-control" id="recent" placeholder="过滤掉最近N天内不活跃的用户">
-                    </div>
-                </form>
-            </div>
-            <div class='modal-footer'>
-                <button type='button' class='btn btn-default' data-dismiss='modal'>关闭</button>
-                <button type='button' class='btn btn-primary'>发送</button>
-            </div>
-        </div>
-    </div>
-</div>
+    <input id="account" type="text" class="form-control" placeholder="账号" required>
+    <input id="password" type="text" class="form-control" placeholder="密码" required>
+    <button type="button" onclick="add()" class="btn btn-lg btn-primary btn-block">添加</button>
+</div> <!-- /container -->
+
+<script type="text/javascript" src="http://cdn.bootcss.com/jquery/1.10.2/jquery.min.js"></script>
+<script type="text/javascript" src="http://cdn.bootcss.com/twitter-bootstrap/3.0.3/js/bootstrap.min.js"></script>
+<script type="text/javascript">
+    function loaded() {
+        $.ajax({
+            type: "GET",
+            url: "/api/taobao/account",
+            dataType: "json"
+        })
+        .success(function(data) {
+            var tbody = document.getElementsByTagName('tbody')[0];
+            for (var idx = 0; idx < data.accounts.length; idx++) {
+                var account = data.accounts[idx];
+                append(account.account, account.password);
+            }
+        });
+    }
+
+
+    function append(account, password) {
+        var tbody = document.getElementsByTagName('tbody')[0];
+        var tr = document.createElement('tr');
+        tr.id = account;
+        var td2 = document.createElement('td');
+        td2.innerHTML = account;
+        var td3 = document.createElement('td');
+        td3.innerHTML = password;
+        var td4 = document.createElement('td');
+        td4.innerHTML = '<button onclick="del(\'' + account + '\')" type="button" class="btn btn-danger">删除</button>';
+
+        tr.appendChild(td2);
+        tr.appendChild(td3);
+        tr.appendChild(td4);
+        tbody.appendChild(tr);
+    }
+
+    function del(account) {
+        $.ajax({
+            type: "DELETE",
+            url: "/api/taobao/account/" + account,
+            dataType: 'json'
+        })
+        .success(function(data) {
+            if (!data.code) {
+                alert(data.msg);
+            }
+            $('#' + account).remove();
+        });
+    }
+
+    function add() {
+        var account = $("#account").val();
+        var password = $('#password').val();
+        $.ajax({
+            type: 'POST',
+            url: '/api/taobao/account',
+            data: {
+                account: account,
+                password: password
+            },
+            dataType: 'json'
+        })
+        .success(function(data) {
+            if (!data.code) {
+                alert(data.msg);
+                return;
+            }
+            append(account, password);
+        })
+    }
+</script>
 </body>
 </html>

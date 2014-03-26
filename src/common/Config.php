@@ -27,7 +27,7 @@ trait Config {
 
     protected static function config() {
         $config = static::prod();
-        if (false) {
+        if (true) {
             $dev = static::dev();
             $config = array_replace_recursive($config, $dev);
         }
