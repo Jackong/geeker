@@ -15,7 +15,7 @@ trait Router {
         $app->get("/$name/:id", array($this, 'get'));
         $app->get("/$name", array($this, 'gets'));
         $app->put("/$name", array($this, 'create'));
-        $app->post("/$name/:id", array($this, 'update'));
+        $app->post("/$name", array($this, 'update'));
         $app->delete("/$name/:id", array($this, 'del'));
         $app->delete("/$name", array($this, 'clear'));
     }
@@ -32,7 +32,7 @@ trait Router {
         $this->unSupport();
     }
 
-    public function update($id) {
+    public function update() {
         $this->unSupport();
     }
 
