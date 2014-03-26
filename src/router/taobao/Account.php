@@ -13,61 +13,50 @@ use src\common\util\Auth;
 use src\common\util\Input;
 use src\common\util\Mongo;
 use src\common\util\Output;
+use src\service\ali\WangWang;
 
 class Account {
     use Router;
+
     public function gets() {
+        $cb = Input::optional('cb');
         $collection = Mongo::collection('ww.account');
-        $cursor = $collection->find(
+        $doc = $collection->findOne(
             array(
-                'uid' => Auth::account()
+                'uid' => Auth::account(),
             )
         );
         $accounts = array();
-        foreach ($cursor as $doc) {
-            $accounts[] = array(
-                'account' => $doc['account'],
-                'password' => $doc['password']
-            );
+        if (!is_null($doc) && is_array($doc['accounts'])) {
+            foreach ($doc['accounts'] as  $item) {
+                $accounts[] = array(
+                    'account' => $item['account'],
+                    'password' => $item['password'],
+                );
+            }
         }
-        Output::set('accounts', $accounts);
+
+        if (is_null($cb)) {
+            Output::set('accounts', $accounts);
+        } else {
+            echo "$cb(" . json_encode($accounts) . ")";
+        }
     }
 
     public function update() {
         $account = Input::get('account');
         $password = Input::get('password');
         $uid = Auth::account();
-        $collection = Mongo::collection('ww.account');
-        $doc = $collection->findOne(array(
-            'uid' => $uid,
-            'account' => $account
+        WangWang::del($uid, $account);
+        WangWang::update($uid, array(
+            'account' => $account,
+            'password' => $password,
         ));
-        $ok = true;
-        if (!is_null($doc)) {
-            Output::set('msg', '账号已经存在');
-            $ok = false;
-        }
-        $collection->update(
-            array(
-                'uid' => $uid,
-                'account' => $account,
-            ),
-            array(
-                'uid' => $uid,
-                'account' => $account,
-                'password' => $password,
-            ),
-            array('upsert' => true)
-        );
-        Output::set('code', $ok);
+        Output::set('code', true);
     }
 
     public function del($account) {
-        $collection = Mongo::collection('ww.account');
-        $collection->remove(array(
-            'uid' => Auth::account(),
-            'account' => $account,
-        ));
+        WangWang::del(Auth::account(), $account);
         Output::set('code', true);
     }
 } 

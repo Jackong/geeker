@@ -8,12 +8,10 @@
 namespace src\router\user;
 
 
-use Slim\Slim;
 use src\common\Router;
 use src\common\util\Auth;
 use src\common\util\Input;
 use src\common\util\Mongo;
-use src\common\util\Output;
 
 class Account {
     use Router;
@@ -30,8 +28,12 @@ class Account {
             )
         );
         if ($for == 'signup') {
+            if (Auth::account() != 'geeker') {
+                header('Location: /sign/in.html');
+                return;
+            }
             if (!is_null($doc)) {
-                header('Location: /');
+                header('Location: /sign/up.html');
                 return;
             }
             $collection->insert(array(
@@ -39,9 +41,11 @@ class Account {
                 'password' => md5($password),
                 'time' => TIME
             ));
+            header('Location: /sign/up.html?ok=1');
+            return;
         } else {
             if (is_null($doc) || $doc['password'] != md5($password)) {
-                header('Location: /');
+                header('Location: /sign/in.html');
                 return;
             }
         }

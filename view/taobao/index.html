@@ -69,26 +69,6 @@
             role: 'form'
         });
 
-        var account = newElement('div', {
-            class:'form-group'
-        });
-        account.appendChild(newElement('input', {
-            class:'form-control',
-            id: 'account',
-            type: 'text',
-            placeholder:'极客账号'
-        }));
-
-        var password = newElement('div', {
-            class: 'form-group'
-        });
-        password.appendChild(newElement('input', {
-            class: 'form-control',
-            id: 'password',
-            type: 'password',
-            placeholder: '密码'
-        }));
-
         var buyer = newElement('div', {
             class:'radio'
         });
@@ -142,13 +122,17 @@
             placeholder:'过滤掉最近N天内不活跃的用户'
         }));
 
-        form.appendChild(account);
-        form.appendChild(password);
+        var counter = newElement('div', {
+            class: 'form-group',
+            id: 'counter'
+        }, '状态：未发送');
+
         form.appendChild(content);
         form.appendChild(buyer);
         form.appendChild(seller);
         form.appendChild(trade);
         form.appendChild(recent);
+        form.appendChild(counter);
         body.appendChild(form);
         return body;
     };
@@ -164,13 +148,20 @@
             'data-dismiss': 'modal'
         }, '关闭');
 
-        var submit = newElement('button', {
+        var resend = newElement('button', {
+            type: 'button',
+            class: 'btn btn-warning',
+            onclick: 'prepare2send()'
+        }, '重新发送');
+
+        var cosend = newElement('button', {
             type: 'button',
             class: 'btn btn-primary',
-            onclick: 'prepare2send()'
-        }, '发送');
+            onclick: 'receivers()'
+        }, '继续发送');
 
-        footer.appendChild(submit);
+        footer.appendChild(cosend);
+        footer.appendChild(resend);
         footer.appendChild(close);
         return footer;
     };
@@ -236,7 +227,12 @@
 
         TDog.EventCenter.fire(TDog.EVENTS.SEND_MESSAGE, {
             userName : targetNick,
-            content : msg
+            content : msg,
+            callback : {
+                onSuccess: function() {
+                    document.getElementById('counter').innerHTML = '状态：已发送' + (index + 1) + '个';
+                }
+            }
         });
         setTimeout(function() {
             index++;
@@ -248,6 +244,7 @@
     }
 
     function send(data) {
+        document.getElementById('counter').innerHTML = '状态：正在发送';
         if (!data) {
             return;
         }
@@ -255,16 +252,16 @@
         console.log(data);
     };
 
-    function users() {
-        TDog.Util.getScript(api + '/taobao/user');
-        setTimeout(users, 50000);
+    function receivers() {
+        TDog.Util.getScript(api + '/taobao/receiver');
+        setTimeout(receivers, 50000);
     }
 
     function prepare2send() {
+        document.getElementById('counter').innerHTML = '状态：准备发送';
         var receiver = document.getElementById('buyer').checked ? 'buyer' : 'seller';
-        TDog.Util.getScript(api + '/taobao/' + receiver + '/' + document.getElementById('account').value
-         + '?password=' + document.getElementById('password').value
-         + '&trade=' + document.getElementById('trade').value
+        TDog.Util.getScript(api + '/taobao/receiver/' + receiver
+         + '?trade=' + document.getElementById('trade').value
          + '&recent=' + document.getElementById('recent').value
          + '&url=' + encodeURIComponent(window.location.href));
     };
@@ -273,22 +270,20 @@
 </a>
 
 <a href="javascript:{
-    var api = 'http://geeker.duapp.com:10080/api';
-    function login(user) {
-        var username = document.getElementById('TPL_username_1');
-        var password = document.getElementById('TPL_password_1');
-        username.focus();
-        username.value = user.name;
-        password.focus();
-        password.value = user.password;
-        document.getElementById('J_SubmitStatic').click();
+    function getURLParameter(name) {
+        return decodeURI(
+            (RegExp(name + '=' + '(.+?)(&|$)').exec(location.search)||[,null])[1]
+        );
     }
-    var script = document.createElement('script');
-    script.src = api + '/taobao/account';
-    var head = document.getElementsByName('head')[0];
-    head.appendChild(script);
+    var username = document.getElementById('TPL_username_1');
+    var password = document.getElementById('TPL_password_1');
+    username.focus();
+    username.value = getURLParameter('TPL_username_1');
+    password.focus();
+    password.value = getURLParameter('TPL_password_1');
+    document.getElementById('J_SubmitStatic').click();
 };void(0);">
-    自动切换登录
+    登录
 </a>
 <hr/>
     <h2>关联阿里旺旺账号</h2>
@@ -312,6 +307,7 @@
 <script type="text/javascript" src="http://cdn.bootcss.com/jquery/1.10.2/jquery.min.js"></script>
 <script type="text/javascript" src="http://cdn.bootcss.com/twitter-bootstrap/3.0.3/js/bootstrap.min.js"></script>
 <script type="text/javascript">
+    var users = [];
     function loaded() {
         $.ajax({
             type: "GET",
@@ -320,13 +316,13 @@
         })
         .success(function(data) {
             var tbody = document.getElementsByTagName('tbody')[0];
+            users = data.accounts;
             for (var idx = 0; idx < data.accounts.length; idx++) {
                 var account = data.accounts[idx];
                 append(account.account, account.password);
             }
         });
     }
-
 
     function append(account, password) {
         var tbody = document.getElementsByTagName('tbody')[0];
@@ -337,7 +333,7 @@
         var td3 = document.createElement('td');
         td3.innerHTML = password;
         var td4 = document.createElement('td');
-        td4.innerHTML = '<button onclick="del(\'' + account + '\')" type="button" class="btn btn-danger">删除</button>';
+        td4.innerHTML = '<a class="btn btn-success" href="https://login.taobao.com/member/login.jhtml?TPL_username_1=' + account + '&TPL_password_1=' + password + '&redirectURL=http%3A%2F%2Fwww.taobao.com%2F" target="_blank">打开</a> <button onclick="del(\'' + account + '\')" type="button" class="btn btn-danger">删除</button>';
 
         tr.appendChild(td2);
         tr.appendChild(td3);
@@ -375,6 +371,10 @@
             if (!data.code) {
                 alert(data.msg);
                 return;
+            }
+            var node = $('#' + account);
+            if (node) {
+                node.remove();
             }
             append(account, password);
         })
