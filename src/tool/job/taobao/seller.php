@@ -18,7 +18,7 @@ $handler = new \src\service\taobao\handler\Item(new \src\service\taobao\handler\
 $handler->minTradeNum(100);
 
 $redis = \src\common\util\Redis::select('ww');
-$crawler = new \src\service\Crawler();
+$crawler = new \src\service\Crawler('http://www.tmall.com/');
 $page = 1;
 do {
     $num = ($page - 1) * 96;

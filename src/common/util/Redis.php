@@ -19,11 +19,7 @@ class Redis {
     public static function select($name) {
         $redis = new \Redis();
         $service = Service::get();
-        if (!isset($service['redis'][$name])) {
-            Log::warn("$name not exist");
-            return null;
-        }
-        $config = $service['redis'][$name];
+        $config = $service['redis'];
         $ret = $redis->pconnect($config['host'], $config['port']);
         if ($ret === false) {
             Log::warn($redis->getLastError() . "|" . $name);

@@ -23,7 +23,7 @@ $buyer->recent($recent);
 $handler = new \src\service\taobao\handler\Item($buyer);
 $handler->minTradeNum($trade);
 
-$crawler = new \src\service\Crawler();
+$crawler = new \src\service\Crawler('http://www.tmall.com/');
 $page = 1;
 
 $redis = \src\common\util\Redis::select('ww');

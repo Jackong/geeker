@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+</head>
+<body>
+<a href="javascript:{
+    var api = 'http://geeker.duapp.com:10080/api/tieba';
+    var head = document.getElementsByTagName('head')[0];
+    var script = document.createElement('script');
+    var tuDoc = document.getElementsByClassName('u_username_title');
+    var tUser = tuDoc ? tuDoc[0].innerHTML : 'nil';
+    var url = document.getElementById('member_name_link').href;
+    script.src = api + '/member/' + encodeURIComponent(tUser) + '?url=' + encodeURIComponent(url);
+    head.appendChild(script);
+    var tips = document.getElementsByName('kw1')[0];
+    tips.value = '正在提取';
+    var isCrawling = false;
+    function crawling() {
+        isCrawling = true;
+    }
+
+    function preFollow() {
+        if (!isCrawling) {
+            tips.value = '提取失败，请重试或联系管理员';
+            return
+        }
+        tips.value = '正在加好友:';
+        var followScript = document.createElement('script');
+        followScript.src = api + '/member';
+        head.appendChild(followScript);
+    }
+
+    var counter = 0;
+    function batchFollow(members, idx) {
+        if (members.length == 0) {
+            tips.value = '全部好友添加完毕:' + counter;
+            return;
+        }
+        if (idx >= members.length) {
+            preFollow();
+            return;
+        }
+        var member = members[idx];
+        $.tb.post('/home/post/follow', {un: member, tbs: PageData.tbs, ie:'utf-8'}, function (o) {
+            if (o.no == 0) {
+                counter++;
+                tips.value = '已加好友：' + member + '[' + counter + ']';
+            }
+        });
+        setTimeout(function() {
+            batchFollow(members, idx + 1);
+        }, 5000);
+    }
+
+    function tip(idx) {
+        if (idx >= 5) {
+            preFollow();
+            return;
+        }
+        setTimeout(function() {
+            tips.value += '.';
+            tip(idx+1);
+        }, 1000);
+    }
+    tip(1);
+};void (0);">
+    提取该吧会员
+</a>
+</body>
+</html>

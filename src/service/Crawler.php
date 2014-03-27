@@ -8,6 +8,10 @@
 namespace src\service;
 
 class Crawler {
+    private $referer;
+    public function __construct($referer) {
+        $this->referer = $referer;
+    }
     public function crawl($url, Handler $handler) {
         $ch = curl_init();
 
@@ -19,7 +23,9 @@ class Crawler {
 
         curl_setopt($ch,CURLOPT_FOLLOWLOCATION,1);
 
-        curl_setopt($ch, CURLOPT_REFERER, 'http://www.tmall.com/');
+        if (isset($this->referer)) {
+            curl_setopt($ch, CURLOPT_REFERER, $this->referer);
+        }
 
         curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.152 Safari/537.36');
 

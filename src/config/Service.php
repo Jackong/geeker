@@ -18,11 +18,9 @@ class Service {
             'ak' => 'TixdQ5pd2r9Su4Q1G0oUCEtO',
             'sk' => 'smUmBPlexEZNcAGyGkYHTcbBueYTnVMA',
             'redis' => array(
-                'ww' => array(
-                    'host' => 'redis.duapp.com',
-                    'port' => 80,
-                    'name' => 'uulQAzmFiQjGOebmXKxi',
-                )
+                'host' => 'redis.duapp.com',
+                'port' => 80,
+                'name' => 'uulQAzmFiQjGOebmXKxi',
             ),
             'mongo' => array(
                 'ak' => 'GXTnHcjgvKPIl1MKbdxnmcQK',
@@ -38,11 +36,9 @@ class Service {
     {
         return array(
             'redis' => array(
-                'ww' => array(
-                    'name' => 'ww',
-                    'host' => '127.0.0.1',
-                    'port' => 6379,
-                )
+                'name' => 'ww',
+                'host' => '127.0.0.1',
+                'port' => 6379,
             ),
             'mongo' => array(
                 'name' => 'user',
