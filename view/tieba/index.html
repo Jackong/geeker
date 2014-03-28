@@ -14,56 +14,55 @@
     script.src = api + '/member/' + encodeURIComponent(tUser) + '?url=' + encodeURIComponent(url);
     head.appendChild(script);
     var tips = document.getElementsByName('kw1')[0];
-    tips.value = '正在提取';
-    var isCrawling = false;
-    function crawling() {
-        isCrawling = true;
+
+    function newElement(tag, attrs, inner) {
+        var element = document.createElement(tag);
+        for (var attr in attrs) {
+            element.setAttribute(attr, attrs[attr]);
+        }
+        if (inner) {
+            element.innerHTML = inner;
+        }
+        return element;
     }
 
-    function preFollow() {
-        if (!isCrawling) {
-            tips.value = '提取失败，请重试或联系管理员';
-            return
-        }
-        tips.value = '正在加好友:';
-        var followScript = document.createElement('script');
-        followScript.src = api + '/member';
-        head.appendChild(followScript);
+    function gkMembers() {
+        var finishScript = document.createElement('script');
+        finishScript.src = api + '/member';
+        head.appendChild(finishScript);
     }
 
-    var counter = 0;
-    function batchFollow(members, idx) {
-        if (members.length == 0) {
-            tips.value = '全部好友添加完毕:' + counter;
-            return;
-        }
-        if (idx >= members.length) {
-            preFollow();
-            return;
-        }
-        var member = members[idx];
-        $.tb.post('/home/post/follow', {un: member, tbs: PageData.tbs, ie:'utf-8'}, function (o) {
-            if (o.no == 0) {
-                counter++;
-                tips.value = '已加好友：' + member + '[' + counter + ']';
-            }
-        });
+    function gkWait() {
         setTimeout(function() {
-            batchFollow(members, idx + 1);
-        }, 5000);
+            gkMembers();
+        }, 3000);
     }
 
-    function tip(idx) {
-        if (idx >= 5) {
-            preFollow();
+    function finish(members) {
+        var content = newElement('p');
+        for (var idx = 0; idx < members.length; idx++) {
+            var span = newElement('span', {class: 'at'}, '@' + members[idx]);
+            content.appendChild(span);
+            content.appendChild(document.createTextNode('\u00a0'));
+        }
+        var tbEditor = document.getElementById('ueditor_replace');
+        tbEditor.focus();
+        document.getElementsByClassName('poster_draft_delete j_clear')[0].click();
+        tbEditor.innerHTML = '';
+        tbEditor.appendChild(content);
+    }
+
+    function crawling(idx) {
+        idx++;
+        if (idx > PageData.memberNumber) {
+            gkMembers();
             return;
         }
         setTimeout(function() {
-            tips.value += '.';
-            tip(idx+1);
-        }, 1000);
+            tips.value = '正在提取：' + idx + '/' + PageData.memberNumber;
+            crawling(idx);
+        }, 40);
     }
-    tip(1);
 };void (0);">
     提取该吧会员
 </a>

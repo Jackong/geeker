@@ -21,21 +21,31 @@ class Member {
         if (false === strpos($url, 'http://tieba.baidu.com/bawu2/platform/listMemberInfo?word=')) {
             return;
         }
-        exec("php " . PROJECT . "/src/tool/job/tieba/member.php $account \"$url\" >/dev/null 2>&1 &");
-        echo 'crawling()';
+        $cmd = "php " . PROJECT . "/src/tool/job/tieba/member.php $account \"$url\"";
+        exec(sprintf("%s >%s 2>&1 & echo $! > %s", $cmd, "/tmp/job_$account.log", "/tmp/job_$account.pid"));
+        echo 'crawling(0)';
     }
 
     public function gets() {
         $account = 'jack';
         $redis = Redis::select('tieba');
-        $redis->multi();
-        for ($idx = 0; $idx < 20; $idx++) {
-            $redis->lPop($account);
+        if ($redis->get("flag.$account")) {
+            Log::error("tieba member is crawling|$account");
+            echo 'gkWait()';
+            return;
         }
-        $members = $redis->exec();
+        $members = $redis->lRange($account, 0, -1);
         if (is_null($members) || !is_array($members)) {
             $members = array();
         }
-        echo 'batchFollow(' . json_encode($members) . ',0)';
+        $result = array();
+        foreach ($members as $member) {
+            if ($member === false) {
+                continue;
+            }
+            $result[] = $member;
+        }
+
+        echo 'finish(' . json_encode($result) . ')';
     }
 } 
