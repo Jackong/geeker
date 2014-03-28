@@ -31,12 +31,13 @@ class Member {
         $cb = Input::optional('cb');
         $account = 'jack';
         $redis = Redis::select('tieba');
-        if ($redis->get("flag.$account")) {
+        $members = $redis->get($account);
+        if (FALSE === $members) {
             Log::error("tieba member is crawling|$account");
             echo 'gkWait()';
             return;
         }
-        $members = $redis->lRange($account, 0, -1);
+        $members = json_decode($members, true);
         if (is_null($members) || !is_array($members)) {
             $members = array();
         }

@@ -19,7 +19,7 @@ class App {
             'salt' => '3%d@!=-.v4',
             'debug' => false,
             'log' => array(
-                'file' => "/home/bae/log/user_" . DATE . ".log",
+                'file' => "/home/bae/log/user.log." . DATE,
                 'level' => Log::INFO
             ),
         );

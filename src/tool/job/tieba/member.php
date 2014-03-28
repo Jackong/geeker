@@ -17,14 +17,7 @@ $handler = new \src\service\tieba\Member();
 $crawler = new \src\service\Crawler('http://tieba.baidu.com/');
 $members = array();
 $page = 1;
-$redis = \src\common\util\Redis::select('tieba');
-if ($redis->get("flag.$account")) {
-    \src\common\Log::error("tieba member is crawling|$account|$url");
-    return;
-}
-$redis->set("flag.$account", true, 600);
-$redis->del($account);
-$redis->close();
+
 do {
     \src\common\Log::debug("tieba|member|$account|$page|$url");
     $handler->page($page);
@@ -32,16 +25,9 @@ do {
     $page++;
 } while($handler->nextPage());
 
-$members = array_unique($members);
+$members = array_values(array_unique($members));
 $redis = \src\common\util\Redis::select('tieba');
-$redis->multi();
-foreach ($members as $member) {
-    $redis->rPush($account, $member);
-}
-$redis->exec();
-$redis->expire($account, 86400);
-$redis->del("flag.$account");
-$redis->close();
+$redis->set($account, json_encode($members), 86400);
 \src\common\Log::trace("time used: " . (time() - $start));
 
 
