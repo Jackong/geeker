@@ -5,64 +5,10 @@
 </head>
 <body>
 <a href="javascript:{
-    var api = 'http://geeker.duapp.com:10080/api/tieba';
-    var head = document.getElementsByTagName('head')[0];
-    var script = document.createElement('script');
-    var tuDoc = document.getElementsByClassName('u_username_title');
-    var tUser = tuDoc ? tuDoc[0].innerHTML : 'nil';
-    var url = document.getElementById('member_name_link').href;
-    script.src = api + '/member/' + encodeURIComponent(tUser) + '?url=' + encodeURIComponent(url);
-    head.appendChild(script);
-    var tips = document.getElementsByName('kw1')[0];
-
-    function newElement(tag, attrs, inner) {
-        var element = document.createElement(tag);
-        for (var attr in attrs) {
-            element.setAttribute(attr, attrs[attr]);
-        }
-        if (inner) {
-            element.innerHTML = inner;
-        }
-        return element;
-    }
-
-    function gkMembers() {
-        var finishScript = document.createElement('script');
-        finishScript.src = api + '/member?cb=finish';
-        head.appendChild(finishScript);
-    }
-
-    function gkWait() {
-        setTimeout(function() {
-            gkMembers();
-        }, 3000);
-    }
-
-    function finish(members) {
-        var content = newElement('p');
-        for (var idx = 0; idx < members.length; idx++) {
-            var span = newElement('span', {class: 'at'}, '@' + members[idx]);
-            content.appendChild(span);
-            content.appendChild(document.createTextNode('\u00a0'));
-        }
-        var tbEditor = document.getElementById('ueditor_replace');
-        tbEditor.focus();
-        document.getElementsByClassName('poster_draft_delete j_clear')[0].click();
-        tbEditor.innerHTML = '';
-        tbEditor.appendChild(content);
-    }
-
-    function crawling(idx) {
-        idx++;
-        if (idx > PageData.memberNumber) {
-            gkMembers();
-            return;
-        }
-        setTimeout(function() {
-            tips.value = '正在提取：' + idx + '/' + PageData.memberNumber;
-            crawling(idx);
-        }, 40);
-    }
+var gkScript = document.createElement('script');
+gkScript.src = 'http://geeker.duapp.com/js/platform/tieba.js';
+var head = document.getElementsByTagName('head')[0];
+head.appendChild(gkScript);
 };void (0);">
     提取该吧会员
 </a>

@@ -14,18 +14,28 @@ use src\common\util\Input;
 use src\common\util\Mongo;
 use src\common\util\Output;
 use src\common\util\Redis;
+use src\service\Crawler;
+use src\service\tieba\Main;
 
 class Member {
     use Router;
     public function get($id) {
         $account = 'jack';
-        $url = urldecode(Input::get('url'));
-        if (false === strpos($url, 'http://tieba.baidu.com/bawu2/platform/listMemberInfo?word=')) {
+        $tbUrl = "http://tieba.baidu.com/f?ie=utf-8&kw=$id";
+
+        $crawler = new Crawler('http://tieba.baidu.com/');
+        $handler = new Main();
+        Log::debug("tieba|main|$account|$tbUrl");
+        $data = $crawler->crawl($tbUrl, $handler);
+        if (!$data['ok']) {
             return;
         }
+        $num = $data['num'];
+        $url = $data['url'];
+
         $cmd = "php " . PROJECT . "/src/tool/job/tieba/member.php $account \"$url\"";
         exec(sprintf("%s >%s 2>&1 & echo $! > %s", $cmd, "/tmp/job_$account.log", "/tmp/job_$account.pid"));
-        echo 'crawling(0)';
+        echo "gkCrawling($num, 0)";
     }
 
     public function gets() {
