@@ -26,8 +26,16 @@ do {
 } while($handler->nextPage());
 
 $members = array_values(array_unique($members));
-$redis = \src\common\util\Redis::select('tieba');
-$redis->set($account, json_encode($members), 86400);
-\src\common\Log::trace("time used: " . (time() - $start));
+$collection = \src\common\util\Mongo::collection('tieba.member');
+$collection->update(
+    array('uid' => $account),
+    array(
+        'uid' => $account,
+        'members' => $members,
+        'time' => TIME
+    ),
+    array('upsert' => true)
+);
+\src\common\Log::trace("$account|time used: " . (time() - $start));
 
 

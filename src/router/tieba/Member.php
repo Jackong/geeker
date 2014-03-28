@@ -11,6 +11,7 @@ namespace src\router\tieba;
 use src\common\Log;
 use src\common\Router;
 use src\common\util\Input;
+use src\common\util\Mongo;
 use src\common\util\Output;
 use src\common\util\Redis;
 
@@ -30,28 +31,25 @@ class Member {
     public function gets() {
         $cb = Input::optional('cb');
         $account = 'jack';
-        $redis = Redis::select('tieba');
-        $members = $redis->get($account);
-        if (FALSE === $members) {
+        $collection = Mongo::collection('tieba.member');
+        $doc = $collection->findOne(
+            array(
+                'uid' => $account
+            ),
+            array(
+                'members'
+            )
+        );
+        if (is_null($doc) || !isset($doc['members'])) {
             Log::error("tieba member is crawling|$account");
             echo 'gkWait()';
             return;
         }
-        $members = json_decode($members, true);
-        if (is_null($members) || !is_array($members)) {
-            $members = array();
-        }
-        $result = array();
-        foreach ($members as $member) {
-            if ($member === false) {
-                continue;
-            }
-            $result[] = $member;
-        }
+        $members = $doc['members'];
         if (is_null($cb)) {
-            Output::set('members', $result);
+            Output::set('members', $members);
         } else {
-            echo $cb . '(' . json_encode($result) . ')';
+            echo $cb . '(' . json_encode($members) . ')';
         }
     }
 } 
