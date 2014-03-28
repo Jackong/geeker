@@ -11,6 +11,7 @@ namespace src\router\tieba;
 use src\common\Log;
 use src\common\Router;
 use src\common\util\Input;
+use src\common\util\Output;
 use src\common\util\Redis;
 
 class Member {
@@ -27,6 +28,7 @@ class Member {
     }
 
     public function gets() {
+        $cb = Input::optional('cb');
         $account = 'jack';
         $redis = Redis::select('tieba');
         if ($redis->get("flag.$account")) {
@@ -45,7 +47,10 @@ class Member {
             }
             $result[] = $member;
         }
-
-        echo 'finish(' . json_encode($result) . ')';
+        if (is_null($cb)) {
+            Output::set('members', $result);
+        } else {
+            echo $cb . '(' . json_encode($result) . ')';
+        }
     }
 } 
