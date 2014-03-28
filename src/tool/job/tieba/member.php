@@ -24,20 +24,24 @@ if ($redis->get("flag.$account")) {
 }
 $redis->set("flag.$account", true, 600);
 $redis->del($account);
+$redis->close();
 do {
     \src\common\Log::debug("tieba|member|$account|$page|$url");
     $handler->page($page);
-    $members = $crawler->crawl("$url&pn=$page", $handler);
-    $redis->multi();
-    foreach ($members as $member) {
-        $redis->rPush($account, $member);
-    }
-    $redis->exec();
+    $members = array_merge($members, $crawler->crawl("$url&pn=$page", $handler));
     $page++;
 } while($handler->nextPage());
 
+$members = array_unique($members);
+$redis = \src\common\util\Redis::select('tieba');
+$redis->multi();
+foreach ($members as $member) {
+    $redis->rPush($account, $member);
+}
+$redis->exec();
 $redis->expire($account, 86400);
 $redis->del("flag.$account");
+$redis->close();
 \src\common\Log::trace("time used: " . (time() - $start));
 
 
