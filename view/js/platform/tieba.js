@@ -12,7 +12,7 @@ function newElement(tag, attrs, inner) {
     }
     return element;
 }
-var api = 'http://geeker.duapp.com/api/tieba';
+var api = 'http://geeker.duapp.com:10080/api/tieba';
 var tips = qing.g('modReceiverLabel');
 tips.innerHTML = '请输入要提取的贴吧名';
 var gkContent = '';
@@ -69,7 +69,8 @@ function gkContinue() {
     if (leng <= 0) {
         return;
     }
-    for (var jdx = 0; jdx < qing.q('user-receiver-info-close').length; jdx++) {
+    var closeLength = qing.q('user-receiver-info-close').length;
+    for (var jdx = 0; jdx < closeLength; jdx++) {
         qing.q('user-receiver-info-close')[0].click();
     }
     var counter = leng > 4 ? 4 : leng;
