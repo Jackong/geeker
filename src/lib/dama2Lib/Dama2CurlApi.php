@@ -196,12 +196,6 @@ class Dama2Api{
         if($this->$method($path, $params)){
             $json = json_decode($this->getContent(), true);
             if(isset($json['ret']) && ($json['ret'] == '-10001' || $json['ret'] == '-10003')) {
-                $session = \src\common\util\Mongo::collection('session.dama');
-                $session->remove(
-                    array(
-                        $this->prefix_sess . 'name' => $this->username
-                    )
-                );
                 $this->login();
                 $params['auth'] = $this->get_auth();
                 if($this->$method($path, $params)){
