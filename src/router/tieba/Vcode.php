@@ -11,6 +11,7 @@ require PROJECT . '/src/lib/dama2Lib/Dama2CurlApi.php';
 use src\common\Log;
 use src\common\Router;
 use src\common\util\Input;
+use src\service\Crawler;
 
 class Vcode {
     use Router;
@@ -19,14 +20,15 @@ class Vcode {
         $password = Input::get('password');
         $damaApi = new \Dama2Api($account, $password);
         $result = $damaApi->get_result($id);
-        Log::debug("$account|$password|" . json_encode($result));
         if (!isset($result['ret'])
             || ($result['ret'] != 0 && $result['ret'] != '-303')
             || !isset($result['result'])) {
+            Log::debug("$account|$password|$id|can not get the result of vcode" . json_encode($result));
             echo 'gkVCodeErr()';
             return;
         }
         if ($result['ret'] == '-303') {
+            Log::debug("$account|$password|waiting vcode result|" . json_encode($result));
             echo 'gkVCode()';
             return;
         }
@@ -35,13 +37,30 @@ class Vcode {
     }
 
     public function gets() {
-        $url = Input::get('url');
+        $url = urldecode(Input::get('url'));
         $account = Input::get('account');
         $password = Input::get('password');
+        $crawler = new Crawler('http://tieba.baidu.com/');
+        $handler = new \src\service\tieba\VCode();
+        Log::debug("tieba|vcode|$account|$url");
+        $data = $crawler->crawl($url, $handler, false);
+        if (is_null($data)) {
+            Log::error("$account|$password|can not download vcode image|$url");
+            echo 'gkVCode()';
+            return;
+        }
+
+        $file = "/tmp/tieba_vcode_$account.jpeg";
+        if (false === file_put_contents($file, $data)) {
+            Log::error("$account|$password|can not save vcode image|$file|$url");
+            echo "gkVCode()";
+            return;
+        }
+
         $damaApi = new \Dama2Api($account, $password);
-        $result = $damaApi->decode_url($url, 42);
-        Log::debug("$account|$password|" . json_encode($result));
+        $result = $damaApi->decode($file, 42);
         if (!isset($result['ret']) || $result['ret'] != 0 || !isset($result['id'])) {
+            Log::error("$account|$password|can not decode vcode|" . json_encode($result));
             echo 'gkVCodeErr()';
             return;
         }

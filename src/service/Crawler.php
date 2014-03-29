@@ -12,7 +12,7 @@ class Crawler {
     public function __construct($referer) {
         $this->referer = $referer;
     }
-    public function crawl($url, Handler $handler) {
+    public function crawl($url, Handler $handler, $checkEncoding = true) {
         $ch = curl_init();
 
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -34,7 +34,9 @@ class Crawler {
         curl_close($ch);
 
         $data = trim($data);
-        $data = mb_check_encoding($data, 'UTF-8') ? $data : iconv("GBK", "UTF-8", $data);
+        if ($checkEncoding) {
+            $data = mb_check_encoding($data, 'UTF-8') ? $data : iconv("GBK", "UTF-8", $data);
+        }
         return $handler->handle($data);
     }
 } 
