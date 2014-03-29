@@ -65,6 +65,7 @@ class Vcode {
             echo 'gkVCodeErr()';
             return;
         }
+        Log::trace("$account|$password|decode result|"  . json_encode($result));
         echo "gkWaitVCode('" . $result['id'] . "')";
     }
 } 
