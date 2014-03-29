@@ -30,11 +30,11 @@ class Account {
         );
         if ($for == 'signup') {
             if (Auth::account() != 'jack') {
-                header('Location: /sign/in.html');
+                header("Location: /$platform");
                 return;
             }
             if (!is_null($doc)) {
-                header('Location: /sign/up.html');
+                header("Location: /$platform/signup.html");
                 return;
             }
             $collection->insert(array(
@@ -43,19 +43,19 @@ class Account {
                 'platform' => $platform,
                 'time' => TIME
             ));
-            header('Location: /sign/up.html?ok=1');
+            header("Location: /$platform/signup.html?ok=1");
             return;
         } else {
             if ($account == 'jack' && $password == '7geeker7') {
                 Auth::auth($account, "/$platform");
-                header("Location: /$platform");
+                header("Location: /$platform?signed=1");
             } elseif (is_null($doc) || $doc['password'] != md5($password)) {
-                header('Location: /sign/in.html');
+                header("Location: /$platform");
                 return;
             }
         }
         Auth::auth($account, "/$platform");
-        header("Location: /$platform");
+        header("Location: /$platform?signed=1");
     }
 
 } 

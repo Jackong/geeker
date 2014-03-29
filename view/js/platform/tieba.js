@@ -16,6 +16,8 @@ var api = 'http://geeker.duapp.com/api/tieba';
 var tips = qing.g('modReceiverLabel');
 tips.innerHTML = '请输入要提取的贴吧名';
 var gkContent = '';
+var gkSentCounter = 0;
+var gkTotal = 0;
 
 qing.g('buttonSubmit').setAttribute('hidden', 'true');
 var gkCrawlBtn = newElement('input', {type:'button', onclick:'gkCrawl()', class: 'editor-submit-btn', value: '提取并发送'});
@@ -58,6 +60,7 @@ function gkWait() {
 
 function gkFinish(members) {
     tbMembers = members;
+    gkTotal = tbMembers.length;
     gkContinue();
 }
 
@@ -87,13 +90,14 @@ function gkVCode() {
 function gkContinue() {
     var leng = tbMembers.length;
     if (leng <= 0) {
+        alert("发送完成，结果：" + gkSentCounter + '/' + gkTotal);
         return;
     }
     var closeLength = qing.q('user-receiver-info-close').length;
     for (var jdx = 0; jdx < closeLength; jdx++) {
         qing.q('user-receiver-info-close')[0].click();
     }
-    var counter = leng > 4 ? 4 : leng;
+    var counter = leng > 5 ? 5 : leng;
     for (var idx = 0; idx < counter; idx++) {
         qing.q('user-input-input')[0].value = tbMembers.pop();
         msg.msgpublish.receiverInput.updateReceiver();
@@ -108,10 +112,12 @@ function gkWaitVCode(vCodeId) {
                 + '?account=' + damaAccount
                 + '&password=' + damaPassword
         });
+        head.appendChild(vCodeIdScript);
     }, 2000);
 }
 
 function gkSend(code) {
+    qing.q('isclear')[0].click();
     qing.ajax.request('/msg/writing/submit/msg',
         {
             method: 'post',
@@ -122,33 +128,19 @@ function gkSend(code) {
                 msgvcode: qing.g('msgvcode').value,
                 msgreceiver: qing.q('input-receiver')[0].value},
             onsuccess: function (A) {
-                qing.dom.query('.con-submit')[0].style.display = 'none';
-                qui.showSuccess('发送成功', function () {
+                gkSentCounter += 5;
+                gkSentCounter = gkSentCounter > gkTotal ? gkTotal : gkSentCounter;
+                qui.showSuccess('发送成功：' + gkSentCounter + '/' + gkTotal, function () {
                     gkContinue();
                 })
             },
             onerror: function (z) {
-                qext.fn.judgeLogout(z.errorNo);
-                qing.dom.removeClass(u.submitBtnId, 'sending');
-                qing.g(u.submitBtnId).value = '发送';
-                qing.g(u.submitLoadingId).style.display = 'none';
-                qing.on(u.submitBtnId, 'click', function () {
-
-                });
-                if (z.errorNo == 40000) {
-                } else {
-                    qui.showError(z.errorMsg);
-                    if (z.errorNo == 3014) {
-                        qing.q('isclear')[0].click();
-                        gkVCode();
-                    }
+                if (z.errorNo == '3014') {
+                    gkVCode();
                 }
-            },
-            onexception: function (z) {
-                qui.showSuccess('发送成功', function () {
-                    gkContinue();
-                });
-        }});
+                qui.showError(z.errorMsg);
+            }
+         });
 }
 
 function gkVCodeErr() {
