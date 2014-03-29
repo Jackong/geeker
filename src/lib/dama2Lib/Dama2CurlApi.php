@@ -49,21 +49,21 @@ class Dama2Api{
     	if($this->is_auth_alive()){
             return true;
         }
-        \src\common\Log::trace('preauth');
+        \src\common\Log::debug('preauth');
         if( $this->get('/app/preauth') ){
             $json = json_decode($this->getContent(), true);
-            \src\common\Log::trace(json_encode($json));
+            \src\common\Log::debug(json_encode($json));
             if($json['ret'] == 0){
                 $password = md5($this->password);
                 $encinfo = $json['auth'] . "\n" . $this->username . "\n" . $password ;
                 $encinfo = Dama2Encrypt::encrypt($encinfo, self::APP_KEY);
-                \src\common\Log::trace('app/login');
+                \src\common\Log::debug('app/login');
                 $this->get('/app/login', array(
                     'appID' => self::APP_ID,
                     'encinfo' => $encinfo
                     ));
                 $res = @json_decode($this->getContent(), true);
-                \src\common\Log::trace(json_encode($res));
+                \src\common\Log::debug(json_encode($res));
                 if(isset($res['ret']) && $res['ret'] == 0){
                     $this->set_auth($res['auth']);
                     return true;
@@ -76,14 +76,14 @@ class Dama2Api{
     }
 
     private function set_auth($auth){
-        \src\common\Log::trace('set auth');
+        \src\common\Log::debug('set auth');
         $session[$this->prefix_sess . 'name'] = $this->username;
         $session[$this->prefix_sess . 'password'] = $this->password;
         $session[$this->prefix_sess . 'auth'] = urldecode($auth);
         $session[$this->prefix_sess . 'time'] = time();
 
         $this->session = $session;
-        \src\common\Log::trace(json_encode($this->session));
+        \src\common\Log::debug(json_encode($this->session));
     }
 
     private function is_auth_alive(){
@@ -103,9 +103,9 @@ class Dama2Api{
      * @return mixed 成功返回auth, 失败返回false
      */
     private function get_auth(){
-        \src\common\Log::trace('get auth');
+        \src\common\Log::debug('get auth');
         if(!$this->is_auth_alive()){
-            \src\common\Log::trace('no auth and login');
+            \src\common\Log::debug('no auth and login');
             $this->login();
         }
         return is_null($this->session) || empty($this->session) ? null : $this->session[$this->prefix_sess . 'auth'];
@@ -182,9 +182,9 @@ class Dama2Api{
     private function http_request($path, $params, $method='get'){
         if($this->$method($path, $params)){
             $json = json_decode($this->getContent(), true);
-            \src\common\Log::trace("$path" . json_encode($params) . "-" . json_encode($json));
+            \src\common\Log::debug("$path" . json_encode($params) . "-" . json_encode($json));
             if(isset($json['ret']) && ($json['ret'] == '-10001' || $json['ret'] == '-10003')) {
-                \src\common\Log::trace('unset auth');
+                \src\common\Log::debug('unset auth');
                 unset($this->session[$this->prefix_sess . 'auth']);
                 $this->login();
                 $params['auth'] = $this->get_auth();
@@ -197,7 +197,7 @@ class Dama2Api{
             if(isset($json['ret']) && isset($json['auth']) && $json['ret'] == 0){
                 $this->set_auth($json['auth']);
             }
-            \src\common\Log::trace('result' . json_encode($json));
+            \src\common\Log::debug('result' . json_encode($json));
             return $json;
         }
         throw new Exception($this->client->errormsg, 1);
@@ -273,7 +273,7 @@ class Dama2Api{
             'auth' => $this->get_auth(),
             'file' => '@' . realpath($file)
             );
-        \src\common\Log::trace('decode' . json_encode($params));
+        \src\common\Log::debug('decode' . json_encode($params));
         if($len) $params['len'] = $len;
         if($timeout) $params['timeout'] = $timeout;
         return $this->http_request('/app/decode', $params, 'post');

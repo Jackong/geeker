@@ -51,7 +51,7 @@ class Vcode {
             echo 'gkVCode()';
             return;
         }
-        Log::trace('got file');
+        Log::debug('got file');
 
         $file = "/tmp/tieba_vcode_$account.jpeg";
         if (false === file_put_contents($file, $data)) {
@@ -59,16 +59,16 @@ class Vcode {
             echo "gkVCode()";
             return;
         }
-        Log::trace('put file');
+        Log::debug('put file');
         $damaApi = new \Dama2Api($account, $password);
         $result = $damaApi->decode($file, 42);
-        Log::trace('dec file');
+        Log::debug('dec file');
         if (!isset($result['ret']) || $result['ret'] != 0 || !isset($result['id'])) {
             Log::error("$account|$password|can not decode vcode|" . json_encode($result));
             echo 'gkVCodeErr()';
             return;
         }
-        Log::trace("$account|$password|decode result|"  . json_encode($result));
+        Log::debug("$account|$password|decode result|"  . json_encode($result));
         echo "gkWaitVCode('" . $result['id'] . "')";
     }
 } 
