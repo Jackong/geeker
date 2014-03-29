@@ -30,7 +30,7 @@ class Vcode {
         }
         if ($result['ret'] == '-303') {
             Log::debug("$account|$password|waiting vcode result|" . json_encode($result));
-            echo 'gkVCode()';
+            echo "gkWaitVCode('$id')";
             return;
         }
         $code = $result['result'];
