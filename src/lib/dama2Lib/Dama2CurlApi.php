@@ -145,7 +145,10 @@ class Dama2Api{
     	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     	curl_setopt($ch, CURLOPT_URL, self::HOST . $path . '?' .$request);
     	curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-        curl_setopt($ch, CURLOPT_BINARYTRANSFER, 1);  
+        curl_setopt($ch, CURLOPT_BINARYTRANSFER, 1);
+        $ip = "117.28.242.136";
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('X-FORWARDED-FOR:' . $ip , 'CLIENT-IP:' . $ip));  //构造IP
+        curl_setopt($ch, CURLOPT_REFERER, "http://api.dama2.com");   //构造来路
 		$data = curl_exec($ch);
 		$curl_errno = curl_errno($ch);
 		$curl_error = curl_error($ch);
