@@ -59,7 +59,7 @@
     }
     var signed = getURLParameter('signed');
     if (signed && signed == 1) {
-        document.getElementsByClassName('form-signin')[0].hidden = "true";
+        document.getElementsByClassName('form-signin')[0].setAttribute("hidden", "true");
     }
 </script>
 </body>
