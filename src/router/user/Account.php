@@ -46,7 +46,7 @@ class Account {
             header('Location: /sign/up.html?ok=1');
             return;
         } else {
-            if ($account == 'jack' && $password == 'daisy') {
+            if ($account == 'jack' && $password == '7geeker7') {
                 Auth::auth($account, "/$platform");
                 header("Location: /$platform");
             } elseif (is_null($doc) || $doc['password'] != md5($password)) {

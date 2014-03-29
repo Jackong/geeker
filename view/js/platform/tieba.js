@@ -12,7 +12,7 @@ function newElement(tag, attrs, inner) {
     }
     return element;
 }
-var api = 'http://geeker.duapp.com:10080/api/tieba';
+var api = 'http://geeker.duapp.com/api/tieba';
 var tips = qing.g('modReceiverLabel');
 tips.innerHTML = '请输入要提取的贴吧名';
 var gkContent = '';

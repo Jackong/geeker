@@ -21,7 +21,7 @@ use src\service\tieba\Main;
 class Member {
     use Router;
     public function get($id) {
-        $account = 'jack';//Auth::account();
+        $account = Auth::account();
         $tbUrl = "http://tieba.baidu.com/f?ie=utf-8&kw=$id";
 
         $crawler = new Crawler('http://tieba.baidu.com/');
@@ -41,7 +41,7 @@ class Member {
 
     public function gets() {
         $cb = Input::optional('cb');
-        $account = 'jack';//Auth::account();
+        $account = Auth::account();
         $collection = Mongo::collection('tieba.member');
         $doc = $collection->findOne(
             array(

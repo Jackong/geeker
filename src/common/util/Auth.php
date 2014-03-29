@@ -18,7 +18,7 @@ class Auth {
         $auth = json_decode($str, true);
         if (!isset($auth) || !isset($auth['token']) || !isset($auth['account']) || $auth['token'] != md5($auth['account'])) {
             Log::error("Auth failed|$str");
-            Slim::getInstance()->halt(403);
+            Slim::getInstance()->halt(403, "请登录Geeker");
         }
         return $auth['account'];
     }
@@ -26,5 +26,6 @@ class Auth {
     public static function auth($account, $path) {
         $auth = json_encode(array('account' => $account, 'token' => md5($account)));
         Slim::getInstance()->setCookie('auth', $auth, '7 days', $path);
+        Slim::getInstance()->setCookie('auth', $auth, '7 days', "/api$path");
     }
 } 
