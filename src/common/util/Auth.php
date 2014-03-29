@@ -23,8 +23,8 @@ class Auth {
         return $auth['account'];
     }
 
-    public static function auth($account) {
+    public static function auth($account, $path) {
         $auth = json_encode(array('account' => $account, 'token' => md5($account)));
-        Slim::getInstance()->setCookie('auth', $auth, '7 days', '/');
+        Slim::getInstance()->setCookie('auth', $auth, '7 days', $path);
     }
 } 

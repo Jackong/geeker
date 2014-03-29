@@ -10,12 +10,14 @@ namespace src\router\tieba;
 require PROJECT . '/src/lib/dama2Lib/Dama2CurlApi.php';
 use src\common\Log;
 use src\common\Router;
+use src\common\util\Auth;
 use src\common\util\Input;
 use src\service\Crawler;
 
 class Vcode {
     use Router;
     public function get($id) {
+        //$uid = Auth::account();
         $account = Input::get('account');
         $password = Input::get('password');
         $damaApi = new \Dama2Api($account, $password);
@@ -37,6 +39,7 @@ class Vcode {
     }
 
     public function gets() {
+        //$uid = Auth::account();
         $url = urldecode(Input::get('url'));
         $account = Input::get('account');
         $password = Input::get('password');

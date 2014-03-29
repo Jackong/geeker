@@ -17,6 +17,7 @@ class Account {
     use Router;
     public function update() {
         $for = Input::get('for', '/^(signin|signup)$/');
+        $platform = Input::get('platform', '/^(tieba|taobao)$/');
         $account = Input::get('account');
         $password = Input::get('password');
         $collection = Mongo::collection('geeker.account');
@@ -39,21 +40,22 @@ class Account {
             $collection->insert(array(
                 'account' => $account,
                 'password' => md5($password),
+                'platform' => $platform,
                 'time' => TIME
             ));
             header('Location: /sign/up.html?ok=1');
             return;
         } else {
             if ($account == 'jack' && $password == 'daisy') {
-                Auth::auth($account);
-                header('Location: /taobao');
+                Auth::auth($account, "/$platform");
+                header("Location: /$platform");
             } elseif (is_null($doc) || $doc['password'] != md5($password)) {
                 header('Location: /sign/in.html');
                 return;
             }
         }
-        Auth::auth($account);
-        header('Location: /taobao');
+        Auth::auth($account, "/$platform");
+        header("Location: /$platform");
     }
 
 } 
