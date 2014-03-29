@@ -38,10 +38,12 @@ class Dama2Api{
     private $expire_time = 540;
     private $data;
     public $debug;
+    private $sessionFile = "/tmp/session_";
 
     public function __construct($username, $password){
         $this->username = $username;
         $this->password = $password;
+        $this->sessionFile .= $this->username;
     }
 
     private function login(){
@@ -71,31 +73,20 @@ class Dama2Api{
     }
 
     private function set_auth($auth){
-        $session = \src\common\util\Mongo::collection('session.dama');
         $damaSession[$this->prefix_sess . 'name'] = $this->username;
         $damaSession[$this->prefix_sess . 'password'] = $this->password;
         $damaSession[$this->prefix_sess . 'auth'] = urldecode($auth);
         $damaSession[$this->prefix_sess . 'time'] = time();
-        $session->update(
-            array(
-                $this->prefix_sess . 'name' => $this->username,
-            ),
-            $damaSession,
-            array(
-                'upsert' => true
-            )
-        );
-
+        file_put_contents($this->sessionFile, json_encode($damaSession));
     }
 
     private function is_auth_alive(){
-        $session = \src\common\util\Mongo::collection('session.dama');
-        $damaSession = $session->findOne(
-            array(
-                $this->prefix_sess . 'name' => $this->username
-            )
-        );
-        if(! isset($damaSession[$this->prefix_sess . 'auth']) ||
+        if (!file_exists($this->sessionFile)) {
+            return false;
+        }
+        $damaSession = json_encode(file_get_contents($this->sessionFile), true);
+        if(is_null($damaSession) ||
+            !isset($damaSession[$this->prefix_sess . 'auth']) ||
             time() - $damaSession[$this->prefix_sess . 'time'] > $this->expire_time ||
             $damaSession[$this->prefix_sess . 'password'] !== $this->password){
             return false;
@@ -109,19 +100,14 @@ class Dama2Api{
      * @return mixed 成功返回auth, 失败返回false
      */
     private function get_auth(){
-        if(! $this->is_auth_alive()){
+        if(!$this->is_auth_alive()){
             $this->login();
         }
-        $session = \src\common\util\Mongo::collection('session.dama');
-        $damaSession = $session->findOne(
-            array(
-                $this->prefix_sess . 'name' => $this->username
-            ),
-            array(
-                $this->prefix_sess . 'auth'
-            )
-        );
-        return @$damaSession[$this->prefix_sess . 'auth'];
+        if (!file_exists($this->sessionFile)) {
+            return null;
+        }
+        $damaSession = json_decode(file_get_contents($this->sessionFile), true);
+        return is_null($damaSession) ? null : $damaSession[$this->prefix_sess . 'auth'];
     }
 
     private function getContent(){
