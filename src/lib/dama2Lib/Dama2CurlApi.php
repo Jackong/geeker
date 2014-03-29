@@ -38,12 +38,11 @@ class Dama2Api{
     private $expire_time = 540;
     private $data;
     public $debug;
-    private $sessionFile = "/tmp/session_";
+    private $session = array();
 
     public function __construct($username, $password){
         $this->username = $username;
         $this->password = $password;
-        $this->sessionFile .= $this->username;
     }
 
     private function login(){
@@ -73,22 +72,24 @@ class Dama2Api{
     }
 
     private function set_auth($auth){
-        $damaSession[$this->prefix_sess . 'name'] = $this->username;
-        $damaSession[$this->prefix_sess . 'password'] = $this->password;
-        $damaSession[$this->prefix_sess . 'auth'] = urldecode($auth);
-        $damaSession[$this->prefix_sess . 'time'] = time();
-        file_put_contents($this->sessionFile, json_encode($damaSession));
+        $session[$this->prefix_sess . 'name'] = $this->username;
+        $session[$this->prefix_sess . 'password'] = $this->password;
+        $session[$this->prefix_sess . 'auth'] = urldecode($auth);
+        $session[$this->prefix_sess . 'time'] = time();
+
+        $this->session = $session;
+        \Slim\Slim::getInstance()->setCookie($this->prefix_sess, json_encode($this->session), $this->expire_time, "/");
     }
 
     private function is_auth_alive(){
-        if (!file_exists($this->sessionFile)) {
-            return false;
+        if (empty($this->session)) {
+            $this->session = json_decode(\Slim\Slim::getInstance()->getCookie($this->prefix_sess), true);
         }
-        $damaSession = json_encode(file_get_contents($this->sessionFile), true);
-        if(is_null($damaSession) ||
-            !isset($damaSession[$this->prefix_sess . 'auth']) ||
-            time() - $damaSession[$this->prefix_sess . 'time'] > $this->expire_time ||
-            $damaSession[$this->prefix_sess . 'password'] !== $this->password){
+        if(is_null($this->session) ||
+            empty($this->session) ||
+            !isset($this->session[$this->prefix_sess . 'auth']) ||
+            time() - $this->session[$this->prefix_sess . 'time'] > $this->expire_time ||
+            $this->session[$this->prefix_sess . 'password'] !== $this->password){
             return false;
         }else{
             return true;
@@ -103,11 +104,10 @@ class Dama2Api{
         if(!$this->is_auth_alive()){
             $this->login();
         }
-        if (!file_exists($this->sessionFile)) {
-            return null;
+        if (empty($this->session)) {
+            $this->session = json_decode(\Slim\Slim::getInstance()->getCookie($this->prefix_sess), true);
         }
-        $damaSession = json_decode(file_get_contents($this->sessionFile), true);
-        return is_null($damaSession) ? null : $damaSession[$this->prefix_sess . 'auth'];
+        return is_null($this->session) || empty($this->session) ? null : $this->session[$this->prefix_sess . 'auth'];
     }
 
     private function getContent(){
