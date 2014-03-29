@@ -39,6 +39,7 @@ class Dama2Api{
     private $data;
     public $debug;
     private $session = array();
+    const  IP = "117.28.242.136";
 
     public function __construct($username, $password){
         $this->username = $username;
@@ -146,8 +147,7 @@ class Dama2Api{
     	curl_setopt($ch, CURLOPT_URL, self::HOST . $path . '?' .$request);
     	curl_setopt($ch, CURLOPT_TIMEOUT, 30);
         curl_setopt($ch, CURLOPT_BINARYTRANSFER, 1);
-        $ip = "117.28.242.136";
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('X-FORWARDED-FOR:' . $ip , 'CLIENT-IP:' . $ip));  //构造IP
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('X-FORWARDED-FOR:' . self::IP , 'CLIENT-IP:' . self::IP));  //构造IP
         curl_setopt($ch, CURLOPT_REFERER, "http://api.dama2.com");   //构造来路
 		$data = curl_exec($ch);
 		$curl_errno = curl_errno($ch);
@@ -169,6 +169,8 @@ class Dama2Api{
     	curl_setopt($ch, CURLOPT_TIMEOUT, 30);     	
     	curl_setopt($ch, CURLOPT_BINARYTRANSFER, 1);   	
     	curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('X-FORWARDED-FOR:' . self::IP , 'CLIENT-IP:' . self::IP));  //构造IP
+        curl_setopt($ch, CURLOPT_REFERER, "http://api.dama2.com");   //构造来路
 
 		$data = curl_exec($ch);
 		$curl_errno = curl_errno($ch);
