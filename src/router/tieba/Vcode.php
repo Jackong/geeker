@@ -58,7 +58,6 @@ class Vcode {
             echo "gkVCode()";
             return;
         }
-
         $damaApi = new \Dama2Api($account, $password);
         $result = $damaApi->decode($file, 42);
         if (!isset($result['ret']) || $result['ret'] != 0 || !isset($result['id'])) {
@@ -66,6 +65,6 @@ class Vcode {
             echo 'gkVCodeErr()';
             return;
         }
-        $this->get($result['id']);
+        echo "gkWaitVCode('" . $result['id'] . "')";
     }
 } 
