@@ -20,7 +20,7 @@ class App {
             'debug' => false,
             'log' => array(
                 'file' => "/home/bae/log/user.log." . DATE,
-                'level' => Log::INFO
+                'level' => Log::TRACE
             ),
         );
     }
@@ -29,9 +29,6 @@ class App {
     {
         return array(
             'debug' => true,
-            'log' => array(
-                'level' => Log::TRACE
-            )
         );
     }
 
