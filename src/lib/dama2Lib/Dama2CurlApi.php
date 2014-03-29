@@ -78,13 +78,9 @@ class Dama2Api{
         $session[$this->prefix_sess . 'time'] = time();
 
         $this->session = $session;
-        \Slim\Slim::getInstance()->setCookie($this->prefix_sess, json_encode($this->session), $this->expire_time, "/");
     }
 
     private function is_auth_alive(){
-        if (empty($this->session)) {
-            $this->session = json_decode(\Slim\Slim::getInstance()->getCookie($this->prefix_sess), true);
-        }
         if(is_null($this->session) ||
             empty($this->session) ||
             !isset($this->session[$this->prefix_sess . 'auth']) ||
@@ -103,9 +99,6 @@ class Dama2Api{
     private function get_auth(){
         if(!$this->is_auth_alive()){
             $this->login();
-        }
-        if (empty($this->session)) {
-            $this->session = json_decode(\Slim\Slim::getInstance()->getCookie($this->prefix_sess), true);
         }
         return is_null($this->session) || empty($this->session) ? null : $this->session[$this->prefix_sess . 'auth'];
     }

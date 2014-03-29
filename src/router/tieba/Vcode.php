@@ -23,8 +23,7 @@ class Vcode {
         $damaApi = new \Dama2Api($account, $password);
         $result = $damaApi->get_result($id);
         if (!isset($result['ret'])
-            || ($result['ret'] != 0 && $result['ret'] != '-303')
-            || !isset($result['result'])) {
+            || ($result['ret'] != 0 && $result['ret'] != '-303')) {
             Log::debug("$account|$password|$id|can not get the result of vcode" . json_encode($result));
             echo 'gkVCodeErr()';
             return;
