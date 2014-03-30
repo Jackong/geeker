@@ -139,6 +139,13 @@ function gkSend(code) {
                     gkVCode();
                 }
                 qui.showError(z.errorMsg);
+            },
+            onexception: function (z) {
+                gkSentCounter += 5;
+                gkSentCounter = gkSentCounter > gkTotal ? gkTotal : gkSentCounter;
+                qui.showSuccess('发送成功：' + gkSentCounter + '/' + gkTotal, function () {
+                    gkContinue();
+                })
             }
          });
 }
