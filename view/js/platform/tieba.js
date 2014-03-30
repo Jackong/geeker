@@ -142,7 +142,3 @@ function gkSend(code) {
             }
          });
 }
-
-function gkVCodeErr() {
-    alert('验证码系统出错，请联系相关人员');
-}
