@@ -47,14 +47,14 @@ class Account {
             return;
         } else {
             if ($account == 'jack' && $password == '7geeker7') {
-                Auth::auth($account, "/$platform");
+                Auth::auth($account);
                 header("Location: /$platform?signed=1");
             } elseif (is_null($doc) || $doc['password'] != md5($password)) {
                 header("Location: /$platform");
                 return;
             }
         }
-        Auth::auth($account, "/$platform");
+        Auth::auth($account);
         header("Location: /$platform?signed=1");
     }
 
