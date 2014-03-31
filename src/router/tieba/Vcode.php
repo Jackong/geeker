@@ -25,7 +25,7 @@ class Vcode {
         if (!isset($result['ret'])
             || ($result['ret'] != 0 && $result['ret'] != '-303')) {
             Log::debug("$uid|$account|$password|$id|can not get the result of vcode" . json_encode($result));
-            echo 'gkVCode()';
+            echo "gkVCodeError(${result['ret']}, '${result['desc']}')";
             return;
         }
         if ($result['ret'] == '-303') {
@@ -62,7 +62,7 @@ class Vcode {
         $result = $damaApi->decode($file, 42);
         if (!isset($result['ret']) || $result['ret'] != 0 || !isset($result['id'])) {
             Log::error("$uid|$account|$password|can not decode vcode|" . json_encode($result));
-            echo 'gkVCode()';
+            echo "gkVCodeError(${result['ret']}, '${result['desc']}')";
             return;
         }
         Log::debug("$uid|$account|$password|decode result|"  . json_encode($result));

@@ -18,15 +18,18 @@ tips.innerHTML = '请输入要提取的贴吧名';
 var gkContent = '';
 var gkSentCounter = 0;
 var gkTotal = 0;
-
-qing.g('buttonSubmit').setAttribute('hidden', 'true');
-var gkCrawlBtn = newElement('input', {type:'button', onclick:'gkCrawl()', class: 'editor-submit-btn', value: '提取并发送'});
-qing.q('left')[0].appendChild(gkCrawlBtn);
+var gkTiebaName;
 var tbMembers = [];
 var damaAccount, damaPassword;
-gkDamaInput();
+var gkPage = 1;
 
-function gkDamaInput() {
+gkInit();
+
+function gkInit() {
+    qing.g('buttonSubmit').setAttribute('hidden', 'true');
+    var gkCrawlBtn = newElement('input', {type:'button', onclick:'gkCrawl()', class: 'editor-submit-btn', value: '提取并发送'});
+    qing.q('left')[0].appendChild(gkCrawlBtn);
+
     qing.q('mod-friends-tips-content')[0].innerHTML = '充值卡：ed227bbe38e2d4cdb779697c3294ed99';
     var account = newElement('input', {id: 'damaAccount', type: 'text', placeholder: '打码账号'});
     var password = newElement('input', {id: 'damaPassword', type: 'text', placeholder: '打码密码'});
@@ -38,71 +41,61 @@ function gkDamaInput() {
 function gkCrawl() {
     damaAccount = qing.g('damaAccount').value;
     damaPassword = qing.g('damaPassword').value;
-    var crawlerScript = document.createElement('script');
-    crawlerScript.src = api + '/member/' + encodeURIComponent(qing.q('input-receiver')[0].value.replace(";", ""));
+    gkTiebaName = qing.q('input-receiver')[0].value.replace(";", "");
     qing.q('user-receiver-info-close')[0].click();
     gkContent = qelm.msgeditor.getTextArea('msgTextareaCon').value;
-    head.appendChild(crawlerScript);
     document.getElementsByName('vcode')[0].focus();
+    gkCrawlPage();
 }
 
-function gkMembers() {
-    var finishScript = document.createElement('script');
-    finishScript.src = api + '/member?cb=gkFinish';
-    head.appendChild(finishScript);
+function gkCrawlPage() {
+    var crawlerScript = document.createElement('script');
+    crawlerScript.src = api + '/member/' + encodeURIComponent(gkTiebaName) + '?page=' + gkPage;
+    head.appendChild(crawlerScript);
 }
 
-function gkWait() {
-    setTimeout(function() {
-        gkMembers();
-    }, 3000);
-}
-
-function gkFinish(members) {
-    tbMembers = members;
-    gkTotal = tbMembers.length;
+function gkSendMembers(total, members) {
+    if (members.length <= 0) {
+        gkCrawlPage();
+        return;
+    }
+    gkPage++;
+    tbMembers = tbMembers.concat(members);
+    gkTotal = total;
     gkContinue();
 }
 
-function gkCrawling(num, idx) {
-    idx++;
-    if (idx > num) {
-        gkMembers();
-        return;
-    }
-    setTimeout(function() {
-        tips.innerHTML = '正在提取：' + idx + '/' + num;
-        gkCrawling(num, idx);
-    }, 40);
-}
-
-
-
-function gkVCode() {
-    var vcodeScript = newElement('script', {
-        src: api + '/vcode?account=' + damaAccount
-            + '&password=' + damaPassword
-            + '&url=' + encodeURIComponent(qing.q('code-img')[0].src)
-    });
-    head.appendChild(vcodeScript);
-}
-
 function gkContinue() {
-    var leng = tbMembers.length;
-    if (leng <= 0) {
+    if (gkSentCounter >= gkTotal) {
         alert("发送完成，结果：" + gkSentCounter + '/' + gkTotal);
         return;
     }
+    var leng = tbMembers.length;
+    if (leng < 5 && gkSentCounter + leng < gkTotal) {
+        gkCrawlPage();
+        return;
+    }
+
     var closeLength = qing.q('user-receiver-info-close').length;
     for (var jdx = 0; jdx < closeLength; jdx++) {
         qing.q('user-receiver-info-close')[0].click();
     }
+
     var counter = leng > 5 ? 5 : leng;
     for (var idx = 0; idx < counter; idx++) {
         qing.q('user-input-input')[0].value = tbMembers.pop();
         msg.msgpublish.receiverInput.updateReceiver();
     }
     gkVCode();
+}
+
+function gkVCode() {
+    var vCodeScript = newElement('script', {
+        src: api + '/vcode?account=' + damaAccount
+            + '&password=' + damaPassword
+            + '&url=' + encodeURIComponent(qing.q('code-img')[0].src)
+    });
+    head.appendChild(vCodeScript);
 }
 
 function gkWaitVCode(vCodeId) {
@@ -117,6 +110,7 @@ function gkWaitVCode(vCodeId) {
 }
 
 function gkSend(code) {
+    var msgvcode = qing.g('msgvcode').value;
     qing.q('isclear')[0].click();
     qing.ajax.request('/msg/writing/submit/msg',
         {
@@ -125,7 +119,7 @@ function gkSend(code) {
             data: {
                 msgcontent: gkContent,
                 vcode: code,
-                msgvcode: qing.g('msgvcode').value,
+                msgvcode: msgvcode,
                 msgreceiver: qing.q('input-receiver')[0].value},
             onsuccess: function (A) {
                 gkSentCounter += 5;
@@ -136,8 +130,8 @@ function gkSend(code) {
             },
             onerror: function (z) {
                 if (z.errorNo == '3014') {
-                    gkVCode();
                 }
+                gkVCode();
                 qui.showError(z.errorMsg);
             },
             onexception: function (z) {
@@ -147,5 +141,9 @@ function gkSend(code) {
                     gkContinue();
                 })
             }
-         });
+        });
+}
+
+function gkVCodeError(code, msg) {
+    alert('打码工具出错啦:' + code + ':' + msg);
 }

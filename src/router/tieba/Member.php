@@ -12,9 +12,6 @@ use src\common\Log;
 use src\common\Router;
 use src\common\util\Auth;
 use src\common\util\Input;
-use src\common\util\Mongo;
-use src\common\util\Output;
-use src\common\util\Redis;
 use src\service\Crawler;
 use src\service\tieba\Main;
 
@@ -22,45 +19,25 @@ class Member {
     use Router;
     public function get($id) {
         $account = Auth::account();
+        $page = Input::get('page', '/^[0-9]+/');
         $tbUrl = "http://tieba.baidu.com/f?ie=utf-8&kw=$id";
 
         $crawler = new Crawler('http://tieba.baidu.com/');
-        $handler = new Main();
+
+        $main = new Main();
         Log::debug("tieba|main|$account|$tbUrl");
-        $data = $crawler->crawl($tbUrl, $handler);
+        $data = $crawler->crawl($tbUrl, $main);
         if (!$data['ok']) {
             return;
         }
         $num = $data['num'];
         $url = $data['url'];
 
-        $cmd = "php " . PROJECT . "/src/tool/job/tieba/member.php $account \"$url\"";
-        exec(sprintf("%s >%s 2>&1 & echo $! > %s", $cmd, "/tmp/job_$account.log", "/tmp/job_$account.pid"));
-        echo "gkCrawling($num, 0)";
-    }
-
-    public function gets() {
-        $cb = Input::optional('cb');
-        $account = Auth::account();
-        $collection = Mongo::collection('tieba.member');
-        $doc = $collection->findOne(
-            array(
-                'uid' => $account
-            ),
-            array(
-                'members'
-            )
-        );
-        if (is_null($doc) || !isset($doc['members'])) {
-            Log::error("tieba member is crawling|$account");
-            echo 'gkWait()';
-            return;
-        }
-        $members = $doc['members'];
-        if (is_null($cb)) {
-            Output::set('members', $members);
-        } else {
-            echo $cb . '(' . json_encode($members) . ')';
-        }
+        $handler = new \src\service\tieba\Member();
+        \src\common\Log::debug("tieba|member|$account|$page|$url");
+        $handler->page($page);
+        $members = $crawler->crawl("$url&pn=$page", $handler);
+        $membersJson = json_encode($members);
+        echo "gkSendMembers($num, $membersJson)";
     }
 } 

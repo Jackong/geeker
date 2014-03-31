@@ -26,13 +26,11 @@ class Member extends Handler {
             return $members;
         }
 
-        $members = $matches[1];
-        if (!preg_match("/class=\"tbui_pagination\\stbui_pagination_left\">共(.+?)页/", $data, $pageMatches)) {
-            Log::error("can not found max page");
+        if (is_null($matches[1]) || !is_array($matches[1])) {
+            return $members;
         }
-        $this->setPage($pageMatches[1], $this->page);
+        $members = $matches[1];
         return $members;
-
     }
 
 } 
