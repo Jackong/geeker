@@ -18,9 +18,28 @@
     <script src="http://cdn.bootcss.com/respond.js/1.3.0/respond.min.js"></script>
     <![endif]-->
 </head>
-<body>
+<body onload="loaded()">
     <div class="container">
+        <h2>账号管理</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>账号</th>
+                    <th>有效期</th>
+<!--                    <th>操作</th>-->
+                </tr>
+            </thead>
+            <tbody>
 
+            </tbody>
+        </table>
+
+        <hr/>
+
+        <input id="account" type="text" class="form-control" placeholder="账号（4位起）" required>
+        <input id="password" type="text" class="form-control" placeholder="密码（6位起）" required>
+        <input id="expiration" type="date" class="form-control" placeholder="有效期" required>
+        <button type="button" onclick="add()" class="btn btn-lg btn-primary btn-block">添加</button>
     </div>
 
     <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
@@ -28,6 +47,83 @@
 
     <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
     <script src="http://cdn.bootcss.com/twitter-bootstrap/3.0.3/js/bootstrap.min.js"></script>
+    <script>
 
+        var loaded = function() {
+            $.ajax({
+                url: '/api/qq/account',
+                type: 'GET',
+                dataType: 'json',
+                success: function(res) {
+                    if (!res.ok) {
+                        alert(res.msg);
+                        return;
+                    }
+                    for (var idx = 0; idx < res.users.length; idx++) {
+                        insert(res.users[idx]);
+                    }
+                }
+            });
+        };
+        var insert = function(user) {
+            var tbody = $('tbody')[0];
+            var tr = document.createElement('tr');
+            tr.id = "tr_" + user.account;
+            var account = document.createElement('th');
+            account.innerHTML = user.account;
+            tr.appendChild(account);
+
+            var expiration = document.createElement('th');
+            expiration.innerHTML = user.expiration;
+            tr.appendChild(expiration);
+
+            var op = document.createElement('th');
+            op.innerHTML = "<button onclick='del(\"" + user.account +"\")' type='button' class='btn btn-danger'>删除</button>";
+            tr.appendChild(op);
+            tbody.appendChild(tr);
+        };
+        var add = function() {
+            var account = $('#account').val();
+            var password = $('#password').val();
+            var expiration = $('#expiration').val();
+            expiration = Date.parse(expiration) / 1000;
+            if (account.length < 4 || password.length < 6 || expiration.length < 10) {
+                alert('格式有误');
+                return;
+            }
+            $.ajax({
+                url: '/api/qq/account',
+                type: 'PUT',
+                data: {
+                    account: account,
+                    password: password,
+                    expiration: expiration
+                },
+                dataType: 'json',
+                success: function(res) {
+                    if (!res.ok) {
+                        alert(res.msg);
+                    } else {
+                        insert({account: account, expiration: expiration});
+                    }
+                }
+            });
+        };
+
+        var del = function(account) {
+            $.ajax({
+                url: '/api/qq/account/' + account,
+                type: 'DELETE',
+                dataType: 'json',
+                success: function(res) {
+                    if (!res.ok) {
+                        alert('操作失败');
+                    } else {
+                        $('#tr_' + account).remove();
+                    }
+                }
+            });
+        };
+    </script>
 </body>
 </html>

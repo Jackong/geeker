@@ -21,10 +21,14 @@
 <body>
     <div class="container">
         <a href="javascript:{
+            var onError = function(msg) {
+                alert(msg);
+            };
             var head = document.getElementsByTagName('head')[0];
             var script = document.createElement('script');
-            script.src = 'http://geeker.duapp.com/api/qq/sender';
+            script.src = 'http://geeker.duapp.com/api/qq/sender/js';
             head.appendChild(script);
+
             };void(0);">
             QQ群发器
         </a>

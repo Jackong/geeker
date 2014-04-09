@@ -33,7 +33,8 @@ class Auth {
         }
         Slim::getInstance()->setCookie('auth',
             json_encode(array(
-                'account' => $account
+                'account' => $account,
+                'role' => $ok
             )),
             '1 days',
             '/api/qq/'
