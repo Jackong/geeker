@@ -8,7 +8,6 @@ var geek = {
         var _self = this;
         setInterval(function() {
             if (idx >= members.length) {
-                alert('发送完成');
                 return;
             }
             var member = members[idx];
@@ -57,7 +56,6 @@ var geek = {
         var _self = this;
         setInterval(function() {
             if (gidx >= groups.length) {
-                alert('发送完成');
                 return;
             }
             var group = groups[gidx];
@@ -71,7 +69,6 @@ var geek = {
         var _self = this;
         setInterval(function() {
             if (gidx >= groups.length) {
-                alert('发送完成');
                 return;
             }
             var group = groups[gidx];
