@@ -72,20 +72,21 @@ class Auth {
                 'password',
                 'expiration',
                 'online',
-                'admin'
+                'admin',
+                'account',
+                'time'
             )
         );
         if (is_null($doc) || $doc['password'] != md5($password) || $doc['online'] || TIME >= $doc['expiration']) {
             Log::error("qq|update status|$account|$password|$online|${doc['online']}|${doc['expiration']}");
             return self::FAILURE;
         }
+        unset($doc['_id']);
         $ok = $qq->update(
             array(
                 'account' => $account
             ),
-            array(
-                'online' => $online
-            )
+            $doc
         );
         if (!$ok) {
             return self::FAILURE;
