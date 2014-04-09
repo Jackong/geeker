@@ -194,3 +194,4 @@ var geek = {
         this.send2classes(classes);
     }
 };
+geek.init();
