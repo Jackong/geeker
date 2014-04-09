@@ -19,7 +19,7 @@ class Account {
 
     public function create()
     {
-        if ($this->isAdmin()) {
+        if (!$this->isAdmin()) {
             Output::set('ok', false);
             Output::set('msg', '没有权限');
             return;
