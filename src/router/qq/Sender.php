@@ -17,7 +17,7 @@ class Sender {
     public function get($id)
     {
         $auth = json_decode(Slim::getInstance()->getCookie('auth'), true);
-        if (is_null($auth) ||  md5("${auth['account']}|${auth['ok']}") !== $auth['token']) {
+        if (is_null($auth) ||  md5("${auth['account']}|${auth['role']}") !== $auth['token']) {
             echo 'onError("未登录或账号过期")';
             return;
         }

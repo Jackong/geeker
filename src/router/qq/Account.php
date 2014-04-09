@@ -84,7 +84,7 @@ class Account {
 
     private function isAdmin() {
         $auth = json_decode(Slim::getInstance()->getCookie('auth'), true);
-        if (is_null($auth) || $auth['role'] !== 2) {
+        if (is_null($auth) || md5("${auth['account']}|${auth['role']}") !== $auth['token'] || $auth['role'] !== 2) {
             return false;
         }
         return true;
