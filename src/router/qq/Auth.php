@@ -40,8 +40,8 @@ class Auth {
                 'ip'
             )
         );
-        if (is_null($doc) || !$doc['online'] || $doc['ip'] !== $_SERVER['REMOTE_ADDR']) {
-            Log::error('multi login|' . json_encode($doc) . "|" . $_SERVER['REMOTE_ADDR']);
+        if (is_null($doc) || !$doc['online'] || $doc['ip'] !== $auth['ip']) {
+            Log::error('multi login|' . $auth['account'] . '|' . json_encode($doc) . "|" . $auth['ip']);
             echo 'geek.authError()';
             return;
         }
@@ -61,7 +61,8 @@ class Auth {
             json_encode(array(
                 'account' => $account,
                 'role' => $ok,
-                'token' => md5("$account|$ok")
+                'token' => md5("$account|$ok"),
+                'ip' => $_SERVER['REMOTE_ADDR']
             )),
             '1 days',
             '/api/qq/'

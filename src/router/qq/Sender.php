@@ -35,8 +35,8 @@ class Sender {
                 'ip'
             )
         );
-        if (is_null($doc) || !$doc['online'] || $doc['ip'] !== $_SERVER['REMOTE_ADDR']) {
-            Log::error('multi login|' . json_encode($doc) . "|" . $_SERVER['REMOTE_ADDR']);
+        if (is_null($doc) || !$doc['online'] || $doc['ip'] !== $auth['ip']) {
+            Log::error('multi login|' . $auth['account'] . json_encode($doc) . "|" . $auth['ip']);
             echo 'onError("不支持多开")';
             return;
         }
