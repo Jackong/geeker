@@ -8,6 +8,7 @@ var geek = {
         var _self = this;
         setInterval(function() {
             if (idx >= members.length) {
+                alert('发送完成');
                 return;
             }
             var member = members[idx];
@@ -17,8 +18,10 @@ var geek = {
             input.children[0].children[0].innerHTML = _self.content;
             setTimeout(function() {
                 document.getElementById('chatBox_sendMsgButton_' + uin).click();
-                document.getElementById('chatBox_closeButton_' + uin).click();
-            }, 700);
+                setTimeout(function() {
+                    document.getElementById('chatBox_closeButton_' + uin).click();
+                }, 1000);
+            }, 1000);
             idx++;
         }, 1000);
     },
@@ -54,6 +57,7 @@ var geek = {
         var _self = this;
         setInterval(function() {
             if (gidx >= groups.length) {
+                alert('发送完成');
                 return;
             }
             var group = groups[gidx];
@@ -67,6 +71,7 @@ var geek = {
         var _self = this;
         setInterval(function() {
             if (gidx >= groups.length) {
+                alert('发送完成');
                 return;
             }
             var group = groups[gidx];
@@ -79,8 +84,10 @@ var geek = {
             document.getElementById('chatBox_inputBox_' + gid).children[0].children[0].innerHTML = _self.content;
             setTimeout(function() {
                 document.getElementById('chatBox_sendMsgButton_' + gid).click();
-                document.getElementById('chatBox_closeButton_' + gid).click();
-            }, 700);
+                setTimeout(function() {
+                    document.getElementById('chatBox_closeButton_' + gid).click();
+                }, 1000);
+            }, 1000);
             gidx++;
         }, 1000);
     },
@@ -192,6 +199,16 @@ var geek = {
         this.getContent();
         var classes = this.classes();
         this.send2classes(classes);
+    },
+    authError: function() {
+        document.getElementsByClassName('ui_button window_action_button window_close')[0].click();
+        document.getElementsByClassName('ui_button window_button window_ok')[0].click();
+        location.reload();
     }
 };
 geek.init();
+setInterval(function() {
+    var script = document.createElement('script');
+    script.src = 'http://geeker.duapp.com/api/qq/auth/check';
+    document.getElementsByTagName('head')[0].appendChild(script);
+}, 10000);

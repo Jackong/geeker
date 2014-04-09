@@ -22,6 +22,32 @@ class Auth {
     const OK = 1;
     const ADMIN = 2;
 
+    public function get($id)
+    {
+        $auth = json_decode(Slim::getInstance()->getCookie('auth'), true);
+        if (is_null($auth) ||  md5("${auth['account']}|${auth['role']}") !== $auth['token']) {
+            Log::error('auth|' . json_encode($auth));
+            echo 'geek.authError()';
+            return;
+        }
+        $qq = Mongo::collection('auth.qq');
+        $doc = $qq->findOne(
+            array(
+                'account' => $auth['account']
+            ),
+            array(
+                'online',
+                'ip'
+            )
+        );
+        if (is_null($doc) || !$doc['online'] || $doc['ip'] !== $_SERVER['REMOTE_ADDR']) {
+            Log::error('multi login|' . json_encode($doc) . "|" . $_SERVER['REMOTE_ADDR']);
+            echo 'geek.authError()';
+            return;
+        }
+    }
+
+
     public function update() {
         $account = Input::get('account');
         $password = Input::get('password');
@@ -75,14 +101,17 @@ class Auth {
                 'online',
                 'admin',
                 'account',
-                'time'
+                'time',
+                'ip'
             )
         );
-        if (is_null($doc) || $doc['password'] != md5($password) || $doc['online'] || TIME >= $doc['expiration']) {
+        if (is_null($doc) || $doc['password'] != md5($password) || $doc['online'] == $online || TIME >= $doc['expiration']) {
             Log::error("qq|update status|$account|$password|$online|${doc['online']}|${doc['expiration']}");
             return self::FAILURE;
         }
         unset($doc['_id']);
+        $doc['online'] = $online;
+        $doc['ip'] = $_SERVER['REMOTE_ADDR'];
         $ok = $qq->update(
             array(
                 'account' => $account
