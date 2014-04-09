@@ -29,13 +29,7 @@ class Input {
     }
 
     public static function optional($name, $pattern = null) {
-        if (isset($_REQUEST[$name])) {
-            $value = $_REQUEST[$name];
-        } else {
-            $env = Slim::getInstance()->environment();
-            $request = $env['slim.input'];
-            $value = isset($request[$name]) ? $request[$name] : null;
-        }
+        $value = Slim::getInstance()->request()->params($name);
         if (is_null($value)) {
             return null;
         }

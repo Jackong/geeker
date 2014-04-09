@@ -9,6 +9,7 @@ namespace src\router\qq;
 
 
 use Slim\Slim;
+use src\common\Log;
 use src\common\Router;
 use src\common\util\Input;
 use src\common\util\Mongo;
@@ -60,6 +61,7 @@ class Auth {
             )
         );
         if (is_null($doc) || $doc['password'] != md5($password) || $doc['online'] || TIME >= $doc['expiration']) {
+            Log::error("qq|update status|$account|$password|$online|${doc['online']}|${doc['expiration']}");
             return false;
         }
         return $qq->update(
