@@ -25,7 +25,7 @@ var geek = {
     expandMembers: function(group) {
         var _self = this;
         var gid = group.getAttribute('gid');
-        if (!document.getElementById('check_group_' + gid).checked || gid == this.GID) {
+        if (!document.getElementById('check_group_' + gid).checked) {
             return;
         }
         group.click();
@@ -71,7 +71,7 @@ var geek = {
             }
             var group = groups[gidx];
             var gid = group.getAttribute('gid');
-            if (!document.getElementById('check_group_' + gid).checked || gid == _self.GID) {
+            if (!document.getElementById('check_group_' + gid).checked) {
                 gidx++;
                 return;
             }
@@ -127,29 +127,26 @@ var geek = {
             clazz.insertBefore(checkbox, clazz.children[0]);
         }
     },
-    GID: 2177795140,
     isInited: false,
     init: function() {
         if (this.isInited) {
             return;
         }
-        var group = document.getElementById('EQQ_Group_' + this.GID);
-        if (!group) {
-            alert('使用前必需加群：247285290');
+        var groups = this.groups();
+        if (groups.length <= 0) {
+            alert('麻烦加个群再用');
             return;
         }
+        var group = groups[0];
+        var gid = group.getAttribute('gid');
         group.click();
-        var groups = this.groups();
         this.insertCheckbox4group(groups);
         var classes = this.classes();
         this.insertCheckbox4class(classes);
         var _self = this;
         setTimeout(function() {
-            document.getElementById('chatBox_inputBox_' + group.getAttribute('gid')).children[0].children[0].innerHTML = '输入你要发送的内容＝>勾选你要发送的群或分组＝>点击下列按钮发送消息';
-            var sendBtn = document.getElementById('chatBox_sendMsgButton_' + _self.GID);
-            sendBtn.style.visibility = "hidden";
-            document.getElementById('chatBox_sendOptionButton_' + _self.GID).style.visibility = "hidden";
-            document.getElementById('chatBox_closeButton_' + _self.GID).style.visibility = "hidden";
+            document.getElementById('chatBox_inputBox_' + gid).children[0].children[0].innerHTML = '输入你要发送的内容＝>勾选你要发送的群或分组＝>点击下列按钮发送消息';
+            var sendBtn = document.getElementById('chatBox_sendMsgButton_' + gid);
 
             var groupSendBtn = document.createElement('a');
             groupSendBtn.href = '#';
@@ -179,7 +176,8 @@ var geek = {
 
     },
     getContent: function() {
-        this.content = document.getElementById('chatBox_inputBox_' + this.GID).children[0].children[0].innerHTML;
+        var group = this.groups()[0];
+        this.content = document.getElementById('chatBox_inputBox_' + group.getAttribute('gid')).children[0].children[0].innerHTML;
     },
     sendGroups: function() {
         this.getContent();
