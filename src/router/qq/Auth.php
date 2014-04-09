@@ -18,12 +18,16 @@ use src\common\util\Output;
 class Auth {
     use Router;
 
+    const FAILURE = 0;
+    const OK = 1;
+    const ADMIN = 2;
+
     public function update() {
         $account = Input::get('account');
         $password = Input::get('password');
 
         $ok = $this->updateStatus($account, $password, true);
-        if (!$ok) {
+        if (self::FAILURE === $ok) {
             header('Location: /qq');
             return;
         }
@@ -34,6 +38,15 @@ class Auth {
             '1 days',
             '/api/qq/'
         );
+
+        if ($ok === self::OK) {
+            header('Location: /qq/tools.html');
+            return;
+        }
+        if ($ok === self::ADMIN) {
+            header('Location: /qq/admin.html');
+            return;
+        }
     }
 
     public function del($id)
@@ -41,7 +54,7 @@ class Auth {
         $password = Input::get('password');
         $ok = $this->updateStatus($id, $password, false);
         Slim::getInstance()->deleteCookie('auth');
-        if (!$ok) {
+        if (self::FAILURE === $ok) {
             Output::set('msg', '账号或密码错误或过期');
             return;
         }
@@ -57,14 +70,15 @@ class Auth {
             array(
                 'password',
                 'expiration',
-                'online'
+                'online',
+                'admin'
             )
         );
         if (is_null($doc) || $doc['password'] != md5($password) || $doc['online'] || TIME >= $doc['expiration']) {
             Log::error("qq|update status|$account|$password|$online|${doc['online']}|${doc['expiration']}");
-            return false;
+            return self::FAILURE;
         }
-        return $qq->update(
+        $ok = $qq->update(
             array(
                 'account' => $account
             ),
@@ -72,7 +86,12 @@ class Auth {
                 'online' => $online
             )
         );
+        if (!$ok) {
+            return self::FAILURE;
+        }
+        if ($doc['admin']) {
+            return  self::ADMIN;
+        }
+        return self::OK;
     }
-
-
 } 
