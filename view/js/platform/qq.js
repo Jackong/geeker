@@ -173,7 +173,6 @@ var geek = {
             sendBtn.parentElement.appendChild(classSendBtn);
             _self.isInited = true;
         }, 1000)
-
     },
     getContent: function() {
         var group = this.groups()[0];
@@ -195,4 +194,3 @@ var geek = {
         this.send2classes(classes);
     }
 };
-geek.init();

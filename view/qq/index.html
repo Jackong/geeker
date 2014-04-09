@@ -1,16 +1,63 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-cn">
 <head>
-    <title></title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Geeker</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="http://cdn.bootcss.com/twitter-bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/css/signin.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="http://cdn.bootcss.com/html5shiv/3.7.0/html5shiv.min.js"></script>
+    <script src="http://cdn.bootcss.com/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
 </head>
 <body>
-<a href="javascript:{
-var head = document.getElementsByTagName('head')[0];
-var script = document.createElement('script');
-script.src = 'http://geeker.duapp.com/js/platform/qq.js';
-head.appendChild(script);
-};void(0);">
-    群发器
-</a>
+    <div class="container">
+        <form class="form-signin" role="form" action="/api/qq/auth" method="post">
+            <h2 class="form-signin-heading">登录</h2>
+            <input id="account" name="account" type="text" class="form-control" placeholder="账号" required autofocus>
+            <input id="password" name="password" type="password" class="form-control" placeholder="密码" required>
+            <button class="btn btn-lg btn-primary btn-block" type="submit">登录</button>
+            <a href="#" class="btn btn-lg btn-warning btn-block" onclick="signout()">退出</a>
+        </form>
+    </div>
+
+    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+    <script src="http://cdn.bootcss.com/jquery/1.10.2/jquery.min.js"></script>
+
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="http://cdn.bootcss.com/twitter-bootstrap/3.0.3/js/bootstrap.min.js"></script>
+
+    <script>
+        var signout = function() {
+            var account = $('#account').val();
+            var password = $('#password').val();
+            if (account.length < 4 || password.length < 6) {
+                alert('请输入账号密码安全退出');
+                return;
+            }
+            $.ajax({
+                url: '/api/qq/auth/' + account,
+                type: 'DELETE',
+                data: {
+                    'password': password
+                },
+                dataType: 'json',
+                success: function(res) {
+                    alert(res.msg);
+                }
+            });
+        }
+    </script>
 </body>
 </html>
