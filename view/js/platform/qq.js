@@ -3,11 +3,12 @@
  */
 var geek = {
     content: '',
+    isStop: false,
     send2users: function(members) {
         var idx = 0;
         var _self = this;
         setInterval(function() {
-            if (idx >= members.length) {
+            if (idx >= members.length || _self.isStop) {
                 return;
             }
             var member = members[idx];
@@ -68,7 +69,7 @@ var geek = {
         var gidx = 0;
         var _self = this;
         setInterval(function() {
-            if (gidx >= groups.length) {
+            if (gidx >= groups.length || _self.isStop) {
                 return;
             }
             var group = groups[gidx];
@@ -163,7 +164,7 @@ var geek = {
             var membersSendBtn = document.createElement('a');
             membersSendBtn.href = '#';
             membersSendBtn.setAttribute('class', 'chatBox_sendMsgButton');
-            membersSendBtn.innerHTML = '私聊群成员';
+            membersSendBtn.innerHTML = '群私聊';
             membersSendBtn.setAttribute('onclick', 'geek.sendMembers()');
 
             sendBtn.parentElement.appendChild(membersSendBtn);
@@ -175,8 +176,26 @@ var geek = {
             classSendBtn.setAttribute('onclick', 'geek.sendFriends()');
 
             sendBtn.parentElement.appendChild(classSendBtn);
+
+            var stopToggleBtn = document.createElement('a');
+            stopToggleBtn.href = '#';
+            stopToggleBtn.setAttribute('class', 'chatBox_sendMsgButton');
+            stopToggleBtn.setAttribute('id', 'toggleStop');
+            stopToggleBtn.innerHTML = '暂 停';
+            stopToggleBtn.setAttribute('onclick', 'geek.toggleStop()');
+
+            sendBtn.parentElement.appendChild(stopToggleBtn);
             _self.isInited = true;
         }, 1000)
+    },
+    toggleStop: function() {
+        if (this.isStop) {
+            document.getElementById('toggleStop').innerHTML = '暂 停';
+            this.isStop = false;
+        } else {
+            document.getElementById('toggleStop').innerHTML = '继 续';
+            this.isStop = true;
+        }
     },
     getContent: function() {
         var group = this.groups()[0];
