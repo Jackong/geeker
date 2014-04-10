@@ -59,6 +59,9 @@ class Account {
         $cursor = $qq->find();
         $users = array();
         foreach ($cursor as $doc) {
+            if ($doc['admin']) {
+                continue;
+            }
             $users[] = array(
                 'account' => $doc['account'],
                 'expiration' => date("Y-m-d H:i:s", $doc['expiration'])
