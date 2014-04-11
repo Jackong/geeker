@@ -12,6 +12,10 @@ var geek = {
                 return;
             }
             var member = members[idx];
+            if (member.classList.contains('groupMaster') || member.classList.contains('groupManager')) {
+                idx++;
+                return;
+            }
             var uin = member.getAttribute('uin');
             member.click();
             var input = document.getElementById('chatBox_inputBox_' + uin);
