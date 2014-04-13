@@ -15,8 +15,6 @@ use src\common\util\Input;
 class Group {
     use Router;
 
-    const IP = '183.61.32.184';
-
     public function gets()
     {
         $keyword = urldecode(Input::get('keyword'));
@@ -105,8 +103,6 @@ class Group {
             'Host: qun.qq.com',
             'Origin: http://qun.qq.com',
             'Content-Type: application/x-www-form-urlencoded; charset=UTF-8',
-            'X-FORWARDED-FOR:' . self::IP ,
-            'CLIENT-IP:' . self::IP
         ));
         $data = curl_exec($ch);
 

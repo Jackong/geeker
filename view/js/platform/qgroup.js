@@ -9,7 +9,7 @@ var geek = {
         keyword: '',
         min: 0,
         token: '',
-        api: 'http://geeker.duapp.com:10080/api',
+        api: 'http://geeker.duapp.com/api',
         logger: null,
         groups: [],
         idx: 0,
